@@ -10,21 +10,23 @@ CASSANDRA_HOME=$CURRENT_DIR/apache-cassandra-1.2.6
 CASSANDRA_BIN=$CASSANDRA_HOME/bin
 CASSANDRA_CONFIG=$CASSANDRA_HOME/conf
 
-echo "Delete files from /var/lib/cassandra/commitlog/ and /var/lib/cassandra/data/ as to make sure new tokens are assigned when booting the VM?"
+# if uncommented, promts if to delete former cassandra files. needed if we want to make an existing cassandra node elastic. clearing this folder forces cassandra to take a new token when starting. otherwise it kepps old one
 
-select REPLY in "Yes" "No" ; do
+#echo "Delete files from /var/lib/cassandra/commitlog/ and /var/lib/cassandra/data/ as to make sure new tokens are assigned when booting the VM?"
 
-case $REPLY in
-	'Yes' )
-          sudo -S rm -rf  /var/lib/cassandra/commitlog/*.*;
-          sudo -S rm -rf  /var/lib/cassandra/commitlog/*;
-          sudo -S rm -rf  /var/lib/cassandra/data/*.*;
-          sudo -S rm -rf  /var/lib/cassandra/data/*;
-         break;;
-        'No')
- 	 break;;
-esac
-done       
+#select REPLY in "Yes" "No" ; do
+
+#case $REPLY in
+#	'Yes' )
+#          sudo -S rm -rf  /var/lib/cassandra/commitlog/*.*;
+#          sudo -S rm -rf  /var/lib/cassandra/commitlog/*;
+#          sudo -S rm -rf  /var/lib/cassandra/data/*.*;
+#          sudo -S rm -rf  /var/lib/cassandra/data/*;
+#         break;;
+#        'No')
+# 	 break;;
+#esac
+#done       
 
 echo ""
 echo "Setup Cassandra Seed or Data Node?"
@@ -43,15 +45,15 @@ case $REPLY in
 	   echo "su $USER -c $CURRENT_DIR/createCassandraKeyspace.sh" | sudo -S tee -a /etc/rc.local
            echo "exit 0" | sudo -S tee -a /etc/rc.local
 
-           sudo -S chmod +x ./createCassandraKeyspace.sh 
+           sudo -S chmod +x ./createDefaultCassandraKeyspace.sh 
 	
 	   #apply configuration
 	   #/etc/rc.local
  
            #prepare script that scales down the cluster by removing the less loaded node
            eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./scaleInCluster.sh"
-           eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./createCassandraKeyspace.sh"
-           eval "sed -i 's#\<CURRENT_DIR=.*#CURRENT_DIR=$CURRENT_DIR#' ./createCassandraKeyspace.sh"
+           eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./createDefaultCassandraKeyspace.sh"
+           eval "sed -i 's#\<CURRENT_DIR=.*#CURRENT_DIR=$CURRENT_DIR#' ./createDefaultCassandraKeyspace.sh"
    		
 
            sudo -S chmod +x ./scaleInCluster.sh
@@ -108,7 +110,5 @@ case $REPLY in
            break;;
 esac
 done
-
-eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./checkCassandraStatus.sh";
 
 echo "Scripts for Elastic Cassandra Cluster deployed successfully."
