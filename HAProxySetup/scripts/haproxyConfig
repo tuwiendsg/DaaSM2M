@@ -1,0 +1,36 @@
+# Simple configuration for an HTTP proxy listening on port 80 on all
+    # interfaces and forwarding requests to a single backend "servers" with a
+    # single server "server1" listening on 127.0.0.1:8000
+    global
+        daemon
+        #debug 
+        maxconn 10000
+        ulimit-n 20031
+        maxconnrate 11000
+        maxcompcpuusage 10
+        #log localhost local0
+        user ubuntu
+        stats socket  /tmp/haproxy 
+     
+   defaults
+        mode http
+        timeout connect 10s
+        timeout client 10s
+        timeout server 10s
+        option http-no-delay
+        #timeout http-request 10      
+        #timeout http-keep-alive 10
+        
+    frontend http-in
+        bind *:8080
+        rate-limit sessions 10000
+        #option forwardfor
+        default_backend servers
+
+    backend servers
+        #option forwardfor
+        #option httpclose
+        #balance roundrobin
+        
+        server 10.99.0.16 10.99.0.16:8080 maxconn 2000
+

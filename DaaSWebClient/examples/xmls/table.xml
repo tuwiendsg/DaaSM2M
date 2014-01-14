@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table name="TableX" primaryKeyName="key" primaryKeyType="int">
+    <keyspace name="testKeyspace"/>
+    <Column name="sensorName" type="text"/>
+    <Column name="sensorValue" type="double"/>
+</Table>

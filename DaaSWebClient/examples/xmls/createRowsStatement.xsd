@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Column" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="CreateRowsStatement" type="createRowsStatement"/>
+
+  <xs:element name="Keyspace" type="keyspace"/>
+
+  <xs:element name="Row" type="tableRow"/>
+
+  <xs:element name="Table" type="table"/>
+
+  <xs:complexType name="createRowsStatement">
+    <xs:sequence>
+      <xs:element ref="Table"/>
+      <xs:element ref="Row" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="table">
+    <xs:sequence>
+      <xs:element name="keyspace" type="keyspace"/>
+      <xs:element ref="Column" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="primaryKeyName" type="xs:string" use="required"/>
+    <xs:attribute name="primaryKeyType" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="keyspace">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="column">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="tableRow">
+    <xs:sequence>
+      <xs:element ref="Column" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="rowColumn">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>
+

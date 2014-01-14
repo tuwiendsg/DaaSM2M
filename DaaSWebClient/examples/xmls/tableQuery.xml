@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Query>
+    <Table name="TableX">
+        <Keyspace name="testKeyspace"/>
+    </Table>
+    <Condition>key = 1 AND sensorvalue = 555.3</Condition>
+    <MaxResultCount>1</MaxResultCount>
+</Query>

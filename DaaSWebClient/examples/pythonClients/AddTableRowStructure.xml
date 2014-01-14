@@ -1,0 +1,12 @@
+<CreateRowsStatement>
+    <Table name="tableTestKeyspace">
+        <Keyspace name="TestKeyspace"/>
+    </Table>
+    <Row>
+        <Column name="key" value="2"/>
+        <Column name="age" value="3"/>
+        <Column name="name" value="DDD"/>
+        <Column name="young" value="TRUE"/>
+    </Row>
+</CreateRowsStatement>
+

@@ -1,0 +1,1 @@
+{"name":"tableName","keyspace":{"name":"DDD"},"primaryKeyName":"pk","primaryKeyType":"pkt","columns":[{"name":"columnName","type":"columnType"}]}

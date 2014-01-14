@@ -1,0 +1,100 @@
+### BEGIN INIT INFO
+# Provides:          daas-service
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start a new daas-service
+# Description:       To start-stop daas-service
+### END INIT INFO
+
+RUN_MODE="daemons"
+
+#please configure appropriately
+DAEMONDIR=
+
+JAVA=`which java`
+NAME=daas-service
+DAEMON=DaaS.war.jar
+PIDDIR=/tmp/daas
+PIDFILE=$PIDDIR/
+PORT=8080
+
+IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
+
+HAPROXY_REGISTER_COMMAND=registerTOHAProxy
+HAPROXY_DEREGISTER_COMMAND=deregisterTOHAProxy
+
+#can also be called remotely through SSH 
+#HAPROXY_REGISTER_COMMAND=ssh -i ~/key registerTOHAProxy
+#HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterTOHAProxy
+
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
+#test -x $DAEMONDIR/$DAEMON || exit 0
+
+./lib/lsb/init-functions
+
+
+
+case "$1" in
+	start)
+                #this checks what pids allready exist, such that it can instantiate multiple on different ports
+                while [! -f $FILE ];
+                do 
+		    PORT=$((PORT+1))
+		done
+                log_daemon_msg "Starting DaaS on port $PORT"
+
+		# Make sure we have our PIDDIR, even if it's on a tmpfs
+		# install -o root -g root -m 755 -d $PIDDIR
+        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile '$PIDDIR/$PORT' --make-pidfile --background --exec $JAVA -- -jar $DAEMON -httpPort $PORT; then
+		    log_end_msg 1
+		    exit 1
+		fi
+                #if all ok, register to HAPROXY
+                log_daemon_msg "Register in HAPROXY"      
+                HAPROXY_REGISTER_COMMAND $IP $PORT
+		log_end_msg 0
+		;;
+	stop)
+		 
+                #go through all PIDS and remove first-added
+                for PIDFILE_TO_REMOVE in $PIDDIR
+		do
+		log_daemon_msg "Stopping DaaS on port $PIDFILE_TO_REMOVE"       
+		start-stop-daemon --stop --quiet --pidfile $PIDFILE_TO_REMOVE
+		# Wait a little and remove stale PID file
+		sleep 1
+		if [ -f $PIDFILE_TO_REMOVE ] && ! ps h `cat $PIDFILE_TO_REMOVE` > /dev/null
+			then
+				# Stale PID file (Mela was succesfully stopped),
+				# remove it
+				rm -f $PIDFILE_TO_REMOVE
+			fi
+                #deregister from HAPROXY
+                log_daemon_msg "deregister from HAPROXY" 
+                HAPROXY_DEREGISTER_COMMAND $IP $PIDFILE_TO_REMOVE
+
+                break;
+                done  
+		log_end_msg 0
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	status)
+		 
+		log_success_msg "DaaS might be running"
+		 
+		exit 0
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+		;;
+esac
+ 
+exit 0
+

@@ -1,0 +1,14 @@
+#jre location
+export JAVA_HOME=$HOME/jre1.7.0_17
+
+#The IP to which the Data Node connects to receive a load token. Can be as in the example below an OpenStack contextualization script,
+#or a static IP such as CASSANDRA_SEED_NODE_IP=10.0.0.01
+#OpenStack contextualization data access command example when contextualization data contains a line CASSANDRA_SEED_NODE_IP, and the IP is extracted
+
+export CASSANDRA_SEED_IP_SOURCE="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_SEED_NODE_IP=[0-9.]* | grep -o [0-9.]*"
+
+#these ports are used by Cassandra to communicate. For deploying distinct Cassandra clusters on the same network, the ports need to be changed
+export CASSANDRA_RPC_PORT="\`curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_RPC_PORT=[0-9.]* | grep -o [0-9.]*\`"
+export CASSANDRA_TCP_PORT="\`curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_TCP_PORT=[0-9.]* | grep -o [0-9.]*\`"
+
+

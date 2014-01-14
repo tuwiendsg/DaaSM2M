@@ -1,0 +1,1 @@
+curl http://localhost:8080/daas/api/json/keyspace -H "Content-Type: application/json" -X PUT -d "{"name":"DDD"}"

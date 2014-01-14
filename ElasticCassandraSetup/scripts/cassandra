@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+#Licensed under the EUPL V.1.1 
+#http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+# 
+# description: Starts and stops Cassandra
+# update deamon path to point to the cassandra executable
+
+HOME=
+CASSANDRA_BIN=
+CASSANDRA_HOME=
+JAVA_HOME=
+
+CLASSPATH=$CASSANDRA_HOME/lib
+DEAMON=$CASSANDRA_BIN/cassandra
+
+start() {
+        echo -n "Starting Cassandra... "
+        $DEAMON -p /var/run/cassandra.pid
+        echo "OK"
+        return 0
+}
+
+stop() {
+        #echo -n "Decomissioning Cassandra Node... "
+        #$CASSANDRA_BIN/nodetool -h localhost decommission
+        #echo -n "Stopping Cassandra... "
+        kill $(cat /var/run/cassandra.pid)
+        echo "OK"
+        return 0
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Column" type="column"/>
+
+  <xs:element name="Keyspace" type="keyspace"/>
+
+  <xs:element name="Table" type="table"/>
+
+  <xs:complexType name="table">
+    <xs:sequence>
+      <xs:element name="keyspace" type="keyspace"/>
+      <xs:element ref="Column" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="primaryKeyName" type="xs:string" use="required"/>
+    <xs:attribute name="primaryKeyType" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="keyspace">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="column">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>
+

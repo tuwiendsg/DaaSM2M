@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Row>
+    <Column name="key" value="1"/>
+    <Column name="sensorName" value="SensorX"/>
+    <Column name="sensorValue" value="123.5"/>
+</Row>

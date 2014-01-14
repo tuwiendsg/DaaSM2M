@@ -1,0 +1,7 @@
+<Table name="tableTestKeyspace" primaryKeyName="key" primaryKeyType="int">
+    <Keyspace name="TestKeyspace"/>
+    <Column name="age" type="int"/>
+    <Column name="name" type="text"/>
+    <Column name="young" type="boolean"/>
+</Table>
+

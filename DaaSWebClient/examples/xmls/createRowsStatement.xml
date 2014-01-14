@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CreateRowsStatement>
+    <Table name="TableX">
+        <keyspace name="testKeyspace"/>
+    </Table>
+    <Row>
+        <Column name="sensorName" value="SensorX"/>
+        <Column name="sensorValue" value="123.5"/>
+    </Row>
+    <Row>
+        <Column name="sensorName" value="SensorY"/>
+        <Column name="sensorValue" value="555.3"/>
+    </Row>
+</CreateRowsStatement>
