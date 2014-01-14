@@ -6,8 +6,6 @@
         #debug 
         maxconn 10000
         ulimit-n 20031
-        maxconnrate 11000
-        maxcompcpuusage 10
         #log localhost local0
         user ubuntu
         stats socket  /tmp/haproxy 

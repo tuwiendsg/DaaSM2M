@@ -18,28 +18,31 @@ NAME=daas-service
 DAEMON=DaaS.war.jar
 PIDDIR=/tmp/daas
 PIDFILE=$PIDDIR/
-PORT=8080
+PORT=8081
 
 IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 
-HAPROXY_REGISTER_COMMAND=registerTOHAProxy
-HAPROXY_DEREGISTER_COMMAND=deregisterTOHAProxy
+HAPROXY_REGISTER_COMMAND=registerToHAProxy
+HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
 #can also be called remotely through SSH 
-#HAPROXY_REGISTER_COMMAND=ssh -i ~/key registerTOHAProxy
-#HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterTOHAProxy
+#HAPROXY_REGISTER_COMMAND=ssh -i ~/key registerToHAProxy
+#HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy
 
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
 #test -x $DAEMONDIR/$DAEMON || exit 0
 
 ./lib/lsb/init-functions
 
+if [ ! -d /tmp/daas ]; then
+  mkdir /tmp/daas
+fi
 
 
 case "$1" in
 	start)
                 #this checks what pids allready exist, such that it can instantiate multiple on different ports
-                while [! -f $FILE ];
+                while [ -f $PIDDIR/$PORT ];
                 do 
 		    PORT=$((PORT+1))
 		done
@@ -47,19 +50,19 @@ case "$1" in
 
 		# Make sure we have our PIDDIR, even if it's on a tmpfs
 		# install -o root -g root -m 755 -d $PIDDIR
-        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile '$PIDDIR/$PORT' --make-pidfile --background --exec $JAVA -- -jar $DAEMON -httpPort $PORT; then
+        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDDIR/$PORT --make-pidfile --background --exec $JAVA -- -jar $DAEMON -httpPort $PORT; then
 		    log_end_msg 1
 		    exit 1
 		fi
                 #if all ok, register to HAPROXY
                 log_daemon_msg "Register in HAPROXY"      
-                HAPROXY_REGISTER_COMMAND $IP $PORT
+                $HAPROXY_REGISTER_COMMAND $IP $PORT
 		log_end_msg 0
 		;;
 	stop)
 		 
                 #go through all PIDS and remove first-added
-                for PIDFILE_TO_REMOVE in $PIDDIR
+                for PIDFILE_TO_REMOVE in $PIDDIR/*
 		do
 		log_daemon_msg "Stopping DaaS on port $PIDFILE_TO_REMOVE"       
 		start-stop-daemon --stop --quiet --pidfile $PIDFILE_TO_REMOVE
@@ -73,7 +76,10 @@ case "$1" in
 			fi
                 #deregister from HAPROXY
                 log_daemon_msg "deregister from HAPROXY" 
-                HAPROXY_DEREGISTER_COMMAND $IP $PIDFILE_TO_REMOVE
+                #extract PORT from pidFile: revert text, cut from first / and revert back
+                PID_PORT=`echo $PIDFILE_TO_REMOVE | rev | cut -d/ -f1 | rev`
+                $HAPROXY_DEREGISTER_COMMAND $IP $PID_PORT
+
 
                 break;
                 done  

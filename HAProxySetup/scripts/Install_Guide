@@ -1,0 +1,6 @@
+untar
+tar -xzf ./HAProxySetup-1.0.tar.gz
+cd ./HAProxySetup-1.0
+
+run install
+

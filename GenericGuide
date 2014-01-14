@@ -1,0 +1,12 @@
+All scripts configured for ubuntu, tested on Ubuntu 11 and 13
+
+1. Use ElasticCassandra to setup an elastic Cassandra cluster with scripts to add/remove cassandra nodes
+   This will install on the Cassadra SEED in bin a script which is executed by calling "decomission IP_OF_CASSANDRA_NODE_TO_DECOMISSION"
+   Will install a service for starting cassandra as "sudo service cassandra {start|stop}" 
+
+2. Use HAProxySetup to deploy a HAPRoxy http load balancer and commands for registering/deregistering IP:PORT pairs to the load balancer. The installed commands are in /bin/registerToHAProxy and /bin/deregisterToHAProxy.
+
+3. Use DaaSWebClient to deploy a JAVA RESTful API for the Cassandra cluster. Configure the client to call /bin/registerToHAProxy and /bin/deregisterToHAProxy when starting-stopping the client service.
+   Will install a service for starting cassandra as "sudo service daas-service {start|stop}". If the service is called multiple times on the same machine, it will start new instances of the DaaSWebClient on different ports, and register them in the HAPRoxy by calling register/deregister commands. If the HAProxy is deployed on a separate machine than the client, configure the client to call the "registerToHAProxy" and "deregisterToHAProxy" through SSH to the HAProxy IP.
+
+

@@ -1,6 +1,6 @@
 #!/bin/bash
 HAPROXY_CONFIG_FILE=
-if [ "$#" -ne 2] 
+if [ -z $2 ]
  then 
      #if no IP supplied, try to use contextualization
      echo "No IP received for decomission"         

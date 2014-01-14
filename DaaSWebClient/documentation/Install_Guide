@@ -1,0 +1,5 @@
+1. untar: tar -xzf ./DaaS-1.0.tar.gz
+2. cd ./DaaS-1.0
+3. Configure ./config/cassandraAccess.properties and add Cassandra SEED IP and port
+4. run install
+
