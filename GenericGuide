@@ -9,4 +9,6 @@ All scripts configured for ubuntu, tested on Ubuntu 11 and 13
 3. Use DaaSWebClient to deploy a JAVA RESTful API for the Cassandra cluster. Configure the client to call /bin/registerToHAProxy and /bin/deregisterToHAProxy when starting-stopping the client service.
    Will install a service for starting cassandra as "sudo service daas-service {start|stop}". If the service is called multiple times on the same machine, it will start new instances of the DaaSWebClient on different ports, and register them in the HAPRoxy by calling register/deregister commands. If the HAProxy is deployed on a separate machine than the client, configure the client to call the "registerToHAProxy" and "deregisterToHAProxy" through SSH to the HAProxy IP.
 
+4. The WorkloadGeneration project contains 2 python scripts that act as a simple client for the DaaS: one recreates the Database tables to have a clean setup, and one issues a sinusoidal sequence of insert/delete row in a DaaS test table (configurable). Please configure the scripts to point to the HAProxy IP and PORT, and run them either with python ./scriptName or directly ./scriptName 
+
 

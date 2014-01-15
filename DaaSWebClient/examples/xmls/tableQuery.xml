@@ -3,6 +3,5 @@
     <Table name="TableX">
         <Keyspace name="testKeyspace"/>
     </Table>
-    <Condition>key = 1 AND sensorvalue = 555.3</Condition>
-    <MaxResultCount>1</MaxResultCount>
+    <Condition>key=1</Condition>
 </Query>

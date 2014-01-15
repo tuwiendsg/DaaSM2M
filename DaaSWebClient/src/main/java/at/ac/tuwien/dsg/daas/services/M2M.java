@@ -43,8 +43,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerService;
+//import org.apache.activemq.ActiveMQConnectionFactory;
+//import org.apache.activemq.broker.BrokerService;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -462,26 +462,26 @@ public class M2M {
         api.insertRowsInTable(table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
 
         //also push this in the queue
-        try {
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-            connectionFactory.setBrokerURL(System.getProperty("ActiveMQProtocol", "tcp") + "://" + System.getProperty("ActiveMQIP", "localhost") + ":" + System.getProperty("ActiveMQPort", "61616"));
-
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = session.createQueue(System.getProperty("TopicName", "tcp:SensorTopic"));
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-
-            for (TableRow row : createRowsStatement.getRows()) {
-                TextMessage message = session.createTextMessage(row.toString());
-                producer.send(message);
-            }
-            session.close();
-            connection.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+//        try {
+//            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+//            connectionFactory.setBrokerURL(System.getProperty("ActiveMQProtocol", "tcp") + "://" + System.getProperty("ActiveMQIP", "localhost") + ":" + System.getProperty("ActiveMQPort", "61616"));
+//
+//            Connection connection = connectionFactory.createConnection();
+//            connection.start();
+//            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//            Destination destination = session.createQueue(System.getProperty("TopicName", "tcp:SensorTopic"));
+//            MessageProducer producer = session.createProducer(destination);
+//            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+//
+//            for (TableRow row : createRowsStatement.getRows()) {
+//                TextMessage message = session.createTextMessage(row.toString());
+//                producer.send(message);
+//            }
+//            session.close();
+//            connection.close();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
 
 
     }
@@ -505,23 +505,23 @@ public class M2M {
             api.insertRowsInTable(table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
 
             //also push this in the queue
-
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-            connectionFactory.setBrokerURL(System.getProperty("ActiveMQProtocol", "tcp") + "://" + System.getProperty("ActiveMQIP", "localhost") + ":" + System.getProperty("ActiveMQPort", "61616"));
-
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = session.createQueue(System.getProperty("TopicName", "tcp:SensorTopic"));
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-
-            for (TableRow row : createRowsStatement.getRows()) {
-                TextMessage message = session.createTextMessage(row.toString());
-                producer.send(message);
-            }
-            session.close();
-            connection.close();
+//
+//            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+//            connectionFactory.setBrokerURL(System.getProperty("ActiveMQProtocol", "tcp") + "://" + System.getProperty("ActiveMQIP", "localhost") + ":" + System.getProperty("ActiveMQPort", "61616"));
+//
+//            Connection connection = connectionFactory.createConnection();
+//            connection.start();
+//            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//            Destination destination = session.createQueue(System.getProperty("TopicName", "tcp:SensorTopic"));
+//            MessageProducer producer = session.createProducer(destination);
+//            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+//
+//            for (TableRow row : createRowsStatement.getRows()) {
+//                TextMessage message = session.createTextMessage(row.toString());
+//                producer.send(message);
+//            }
+//            session.close();
+//            connection.close();
 
 
         } catch (IOException ex) {

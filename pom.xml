@@ -14,6 +14,7 @@
         <module>HAProxySetup</module>
         <module>ElasticCassandraSetup</module>
         <module>DaaSWebClient</module>
+        <module>WorkloadGeneration</module>
     </modules>
      
 </project>
