@@ -1,4 +1,7 @@
-1. install Oracle JRE to run Cassandra
+1. install Oracle JRE to run Cassandra  
+   - example for downloading a x64 JDK from command line:  wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" "http://download.oracle.com/otn-pub/java/jdk/7/jdk-7-linux-x64.tar.gz" 
+    - or JRE : wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" "http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jre-7u51-linux-x64.tar.gz"
+
 2. copy tar gz and untar: tar -xzf ./ElasticCassandraSetup-1.0.tar.gz
 3. cd ./ElasticCassandraSetup-1.0
 4. edit ./Config and set JAVA_HOME, and Cassandra properties, to static values, or values obtained from contextualization if needed or other sources. If contextualization is used, make sure you remember the key values you entered.  If Setup as Seed, the SEED property does not need to be entered?

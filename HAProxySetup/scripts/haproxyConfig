@@ -30,5 +30,3 @@
         #option httpclose
         #balance roundrobin
         
-        server 10.99.0.16 10.99.0.16:8080 maxconn 2000
-
