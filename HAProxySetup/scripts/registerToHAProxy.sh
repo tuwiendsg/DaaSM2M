@@ -8,7 +8,7 @@ if [ -z $2 ]
      IP=$1
      PORT=$2
      #sed with  /d deletes matching row 
-     eval "echo \" server $IP $IP:@PORT maxconn 2000\" >> $HAPROXY_CONFIG_FILE"
+     eval "echo \" server $IP $IP:$PORT maxconn 2000\" >> $HAPROXY_CONFIG_FILE"
      sudo killall haproxy
      haproxy -f $HAPROXY_CONFIG_FILE
 fi
