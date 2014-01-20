@@ -32,12 +32,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
- * Uses DataStax Java Driver for Apache Cassandra https://github.com/datastax/java-driver 
- * and CQL 3 for query http://www.datastax.com/docs/1.1/references/cql/index
+ * Uses DataStax Java Driver for Apache Cassandra
+ * https://github.com/datastax/java-driver and CQL 3 for query
+ * http://www.datastax.com/docs/1.1/references/cql/index
  *
  * Author: Daniel Moldovan Institution: Vienna University of Technology
  */
-public class CassandraManagementAPI implements DataManagementAPI{
+public class CassandraManagementAPI implements DataManagementAPI {
 
     private String cassandraHostIP;
     private int casandraPort;
@@ -50,10 +51,10 @@ public class CassandraManagementAPI implements DataManagementAPI{
     }
 
     public void openConnection() {
-    	 Logger.getLogger(DataManagementAPIFactory.class).log(Level.INFO, "Session opened");
+        Logger.getLogger(DataManagementAPIFactory.class).log(Level.INFO, "Connecting to Cassandra at " + cassandraHostIP + ":" + casandraPort);
         if (session == null) {
             Cluster cluster = Cluster.builder()
-                    .withPort(casandraPort)
+//                    .withPort(casandraPort)
                     .addContactPoint(cassandraHostIP).build();
             Metadata metadata = cluster.getMetadata();
 
@@ -65,7 +66,7 @@ public class CassandraManagementAPI implements DataManagementAPI{
                         host.getDatacenter(), host.getAddress(), host.getRack());
             }
             session = cluster.connect();
-           
+
         }
     }
 
@@ -263,7 +264,6 @@ public class CassandraManagementAPI implements DataManagementAPI{
     public synchronized void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
 
         //build create table statement
-
         for (TableRow row : rows) {
             String insertStatement = "INSERT INTO " + keyspaceName + "." + tableName;
             String values = "";
@@ -292,7 +292,6 @@ public class CassandraManagementAPI implements DataManagementAPI{
     public synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
 
         //build create table statement
-
         String updateStatement = "UPDATE " + keyspaceName + "." + tableName + " USING CONSISTENCY QUORUM SET";
         for (String columnName : newData.keySet()) {
             updateStatement += "SET '" + columnName + "' = '" + newData.get(columnName).toString() + "',";
@@ -308,16 +307,16 @@ public class CassandraManagementAPI implements DataManagementAPI{
         session.execute(updateStatement);
 
     }
-    
+
     public List<Row> listKeyspaces() {
-    	 
-    	String selectCommand = "DESCRIBE keyspaces;";
+
+        String selectCommand = "DESCRIBE keyspaces;";
         ResultSet resultSet = session.execute(selectCommand);
         ExecutionInfo info = resultSet.getExecutionInfo();
 
         return (resultSet.isExhausted()) ? null : resultSet.all();
-        
-	}
+
+    }
 
     /**
      *
@@ -378,5 +377,4 @@ public class CassandraManagementAPI implements DataManagementAPI{
         return true;
     }
 
-	
 }

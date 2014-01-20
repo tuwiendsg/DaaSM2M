@@ -10,7 +10,7 @@ tablename = 'sensor'
 
 HAProxyIP = '10.99.0.39'
 HAProxyport = '8080'
-BaseURL = 'http://'+HAProxyIP+':'+HAProxyport
+BaseURL = HAProxyIP+':'+HAProxyport
 
 minOperations = 10
 maxOperations = 50
@@ -28,7 +28,7 @@ def executeRESTCall(restMethod, serviceBaseURL, resourceName, contentType, conte
 
         connection.request(restMethod, serviceBaseURL+'/'+resourceName, body=content,headers=headers,)
         result = connection.getresponse()
-        print result.read()
+        #print result.read()
 
 
 def _reinitiateDB():

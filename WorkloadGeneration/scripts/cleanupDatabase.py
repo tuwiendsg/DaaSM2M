@@ -9,7 +9,7 @@ tablename = 'sensor'
 
 HAProxyIP = 'localhost'
 HAProxyport = '8080'
-BaseURL = 'http://'+HAProxyIP+':'+HAProxyport
+BaseURL = HAProxyIP+':'+HAProxyport
 
 def executeRESTCall(restMethod, serviceBaseURL, resourceName, contentType, content):
 	connection =  httplib.HTTPConnection(serviceBaseURL)

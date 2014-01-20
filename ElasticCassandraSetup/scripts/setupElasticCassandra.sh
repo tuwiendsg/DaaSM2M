@@ -40,6 +40,7 @@ case $REPLY in
 	   echo "eval \"sed -i.bak 's/listen_address:.*/listen_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local
            echo "eval \"sed -i.bak 's/- seeds:.*/- seeds: \\\"\`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`\\\"/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local
 	   echo "eval \"sed -i.bak 's/rpc_address:.*/rpc_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local
+           echo "eval \"sed -i 's/native_transport_port:.*/native_transport_port: $CASSANDRA_NATIVE_CQL_PORT/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local
            echo "eval \"sed -i 's/rpc_port:.*/rpc_port: $CASSANDRA_RPC_PORT/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local
 	   echo "eval \"sed -i 's/storage_port:.*/storage_port: $CASSANDRA_TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml\"" | sudo -S tee -a /etc/rc.local               
 	   echo "su $USER -c $CURRENT_DIR/createCassandraKeyspace.sh" | sudo -S tee -a /etc/rc.local

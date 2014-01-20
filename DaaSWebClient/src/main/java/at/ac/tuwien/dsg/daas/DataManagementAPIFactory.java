@@ -62,7 +62,7 @@ public class DataManagementAPIFactory {
 	}
 
 	public static DataManagementAPI createCassandraFactory(String ip, String port) {
-		Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, ip+":"+ port);
+		Logger.getLogger(DataManagementAPIFactory.class).log(Level.INFO, ip+":"+ port);
 		DataManagementAPI cassandraManagementAPI = new DataManagementDelegate(ip, port);
 		if (activeCassandraManagementAPIs.contains(cassandraManagementAPI)) {
 			return activeCassandraManagementAPIs.get(activeCassandraManagementAPIs.indexOf(cassandraManagementAPI));
