@@ -10,3 +10,9 @@
    Now machine is set UP. If setup up as NODE, snapshot BEFORE restarting the machine. In this way you can add new NODE snapshots which will enter in the cassandra cluster.
 
 
+
+Elastic Capabilities:
+
+ - Decomission Data Node:  run on the Cassandra Seed (through SSH or directly) "decomission NodeIP", and will gracefulyl remove Data Node.
+ - Add new Data Node:  instantiate the ElasticCasandraNode base image and it will automatically joint he cassandra ring. NOTE: do NOT snapshot a Cassandra node which allready belongs to a ring without deleting its data files, as the new VM created after this snapshot will have the same load token as the original machine. This it will just replace the old one, not scale out Cassandra.
+
