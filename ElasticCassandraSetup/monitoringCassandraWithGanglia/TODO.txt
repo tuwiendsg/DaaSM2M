@@ -1,0 +1,3 @@
+1.Configure the path towards apache and the current namespace within .\python_modules\Config.ini
+
+2.follow the steps from installCassandraGangliaScripts.sh
