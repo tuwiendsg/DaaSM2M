@@ -19,6 +19,7 @@ DAEMON=DaaS.war.jar
 PIDDIR=/tmp/daas
 PIDFILE=$PIDDIR/
 PORT=8081
+HAPROXY_IP=109.231.122.200
 
 IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 
@@ -26,13 +27,17 @@ HAPROXY_REGISTER_COMMAND=registerToHAProxy
 HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
 #can also be called remotely through SSH 
-#HAPROXY_REGISTER_COMMAND=ssh -i ~/key registerToHAProxy
+#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
+
+
 #HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy
 
-test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed" exit 0
 #test -x $DAEMONDIR/$DAEMON || exit 0
 
-./lib/lsb/init-functions
+. /lib/lsb/init-functions
 
 if [ ! -d /tmp/daas ]; then
   mkdir /tmp/daas
@@ -65,7 +70,7 @@ case "$1" in
                 for PIDFILE_TO_REMOVE in $PIDDIR/*
 		do
 		log_daemon_msg "Stopping DaaS on port $PIDFILE_TO_REMOVE"       
-		start-stop-daemon --stop --quiet --pidfile $PIDFILE_TO_REMOVE
+		sudo start-stop-daemon --stop --quiet --pidfile $PIDFILE_TO_REMOVE
 		# Wait a little and remove stale PID file
 		sleep 1
 		if [ -f $PIDFILE_TO_REMOVE ] && ! ps h `cat $PIDFILE_TO_REMOVE` > /dev/null
