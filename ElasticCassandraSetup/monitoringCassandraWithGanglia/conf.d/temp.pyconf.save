@@ -1,0 +1,49 @@
+modules {
+  module {
+    name = "findReadLatency1"
+    language = "python"
+  }
+  module {
+    name = "findWriteLatency1"
+    language = "python"
+  
+  }
+
+  module {
+    name = "findWriteCount1"
+    language = "python"
+    
+  }
+  module {
+    name = "findReadCount1"
+    language = "python"
+    
+  }
+
+}
+collection_group {
+  collect_every = 5
+  time_threshold = 50
+  metric {
+    name = "read_count"
+    title = "read count"
+    value_threshold = 70
+  }
+  metric {
+    name = "read_latency"
+    title = "read latency"
+    value_threshold = 70
+  }
+  metric {
+    name = "write_count"
+    title = "write_count"
+    value_threshold = 70
+  }
+    metric {
+    name = "write_latency"
+    title = "write latency"
+    value_threshold = 70
+  }
+
+}
+
