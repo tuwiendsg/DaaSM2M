@@ -69,7 +69,7 @@ case $REPLY in
            #prepare script for gathering seed and current IP and configuring Cassandra
            eval "sed -i 's#\<CASSANDRA_CONFIG=.*#CASSANDRA_CONFIG=$CASSANDRA_CONFIG#' ./joinRing";
            eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./joinRing";
-	   eval "sed -i 's#\<source ./Config=.*#source $CURRENT_DIR/Config#' ./joinRing" 
+	   eval "sed -i 's#\./Config#$CURRENT_DIR/Config#' ./joinRing" 
  
 	   #execute the specified command for retrieving user supplied VM contextualization data
            eval "sed -i 's#\<cassandraSeedIPSource=.*#cassandraSeedIPSource=\"$CASSANDRA_SEED_IP_SOURCE\"#' ./joinRing";            
@@ -89,7 +89,7 @@ case $REPLY in
 		   sudo rm /etc/init.d/cassandra
            fi     
            #NOTE: the cassandra service is not started yet, as not to generate any load token yet. To start the service one must call "joinRing".
-           echo "If this is not to be snapshotted, please reboot OS (sudo reboot) to finish configuration. Else, run sudo service joinRing start".
+           echo "If this is not to be snapshotted, please reboot OS to finish configuration. Else, run sudo service joinRing start".
            break;;
 esac
 done

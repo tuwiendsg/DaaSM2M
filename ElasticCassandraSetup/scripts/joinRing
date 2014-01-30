@@ -19,7 +19,7 @@ CASSANDRA_BIN=
 DAEMON=$CASSANDRA_BIN/cassandra
 cassandraConfFile=$CASSANDRA_CONFIG/cassandra.yaml
 
-source ./Config
+. ./Config
  
 case "$1" in
 	start)
@@ -27,25 +27,41 @@ case "$1" in
 		MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
                 eval "sed -i.bak  's/127.0.0.1 $(eval hostname)//' /etc/hosts"
                 echo "127.0.0.1 $(eval hostname)" | sudo -S tee -a /etc/hosts
-		eval "sed -i.bak 's/- seeds:.*/- seeds: \"$(eval $CASSANDRA_SEED_IP_SOURCE)\"/' $CASSANDRA_CONFIG/cassandra.yaml"
 		eval "sed -i.bak 's/rpc_address:.*/rpc_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
-		eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $(eval $CASSANDRA_NATIVE_CQL_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
-		eval "sed -i.bak 's/rpc_port:.*/rpc_port: $(eval $CASSANDRA_RPC_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
-		eval "sed -i.bak 's/storage_port:.*/storage_port: $(eval $CASSANDRA_TCP_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"                
-                SEED_IP=`eval $cassandraSeedIPSource`   
-	        if [ $? -eq 0 ];then
-	    	  echo "Command $cassandraSeedIPSource executed successfully"
-	        else
-	          echo "Error executing $cassandraSeedIPSource. Using it as SEED_IP string"
-	          SEED_IP=$cassandraSeedIPSource
+                eval "sed -i.bak 's/listen_address:.*/listen_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"		
+
+                SEED_IP=$(eval $cassandraSeedIPSource)
+                if [ ! $? -eq 0 ];then
+                    SEED_IP=$cassandraSeedIPSource
+                fi
+                eval "sed -i.bak 's/- seeds:.*/- seeds: \"$SEED_IP\"/' $cassandraConfFile"
+                echo $SEED_IP
+
+
+		RPC_PORT=$(eval $CASSANDRA_RPC_PORT)   
+	        if [ ! $? -eq 0 ];then
+	          RPC_PORT=$CASSANDRA_RPC_PORT
 	        fi   		
- 		sed -i.bak 's/- seeds: .*/- seeds: \"$SEED_IP\"/' $cassandraConfFile
+ 		eval "sed -i.bak 's/rpc_port:.*/rpc_port: $RPC_PORT/' $cassandraConfFile"
+
+                TCP_PORT=$(eval $CASSANDRA_TCP_PORT)   
+	        if [ ! $? -eq 0 ];then
+	          TCP_PORT=$CASSANDRA_TCP_PORT
+	        fi   		
+                eval "sed -i.bak 's/storage_port:.*/storage_port: $TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml"   
+               
+                NATIVE_PORT=$(eval $CASSANDRA_NATIVE_CQL_PORT)   
+	        if [ ! $? -eq 0 ];then
+	          NATIVE_PORT=$CASSANDRA_NATIVE_CQL_PORT
+	        fi   
+                eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $NATIVE_PORT/' $CASSANDRA_CONFIG/cassandra.yaml"
+
                 $CASSANDRA_BIN/cassandra -p /var/run/cassandra.pid
-		log_end_msg 0
+                echo "OK"
 		;;
 	stop) 
                 kill $(cat /var/run/cassandra.pid)
-		log_end_msg 0
+ 		echo "OK"
 		;;
 	restart)
 		$0 stop
