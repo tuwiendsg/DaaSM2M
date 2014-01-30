@@ -1,0 +1,72 @@
+### BEGIN INIT INFO
+# Provides:          daas-service
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start a new daas-service
+# Description:       To start-stop daas-service
+### END INIT INFO
+
+RUN_MODE="daemons"
+
+#please configure appropriately
+NAME=joinRing
+
+cassandraSeedIPSource=
+CASSANDRA_CONFIG=
+CASSANDRA_BIN=
+DAEMON=$CASSANDRA_BIN/cassandra
+cassandraConfFile=$CASSANDRA_CONFIG/cassandra.yaml
+
+
+. /lib/lsb/init-functions
+
+if [ ! -d /tmp/daas ]; then
+  mkdir /tmp/daas
+fi
+
+
+case "$1" in
+	start)
+                #configure cassandra.yaml
+                sed -i.bak 's/listen_address:.*/listen_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
+                sed -i.bak 's/- seeds:.*/- seeds: \\\"\`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`\\\"/' $CASSANDRA_CONFIG/cassandra.yaml  
+	        sed -i.bak 's/rpc_address:.*/rpc_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
+                sed -i.bak 's/\<native_transport_port:.*/native_transport_port: $CASSANDRA_NATIVE_CQL_PORT/' $CASSANDRA_CONFIG/cassandra.yaml
+                sed -i.bak 's/\<rpc_port:.*/rpc_port: $CASSANDRA_RPC_PORT/' $CASSANDRA_CONFIG/cassandra.yaml  
+  	        sed -i.bak 's/\<storage_port:.*/storage_port: $CASSANDRA_TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml        
+                
+                SEED_IP=`eval $cassandraSeedIPSource`   
+	        if [ $? -eq 0 ];then
+	    	  echo "Command $cassandraSeedIPSource executed successfully"
+	        else
+	          echo "Error executing $cassandraSeedIPSource. Using it as SEED_IP string"
+	          SEED_IP=$cassandraSeedIPSource
+	        fi   		
+ 		sed -i.bak 's/- seeds: .*/- seeds: \"$SEED_IP\"/' $cassandraConfFile
+                $CASSANDRA_BIN/cassandra -p /var/run/cassandra.pid
+		log_end_msg 0
+		;;
+	stop) 
+                kill $(cat /var/run/cassandra.pid)
+		log_end_msg 0
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	status)
+		 
+		log_success_msg "Cassandra might be running"
+		exit 0
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+		;;
+esac
+ 
+exit 0
+

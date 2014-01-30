@@ -6,16 +6,23 @@
 # description: Starts and stops Cassandra
 # update deamon path to point to the cassandra executable
 
-HOME=
-CASSANDRA_BIN=
 CASSANDRA_HOME=
+CASSANDRA_CONFIG=$CASSANDRA_HOME/conf
+CASSANDRA_BIN=$CASSANDRA_HOME/bin
 JAVA_HOME=
-
 CLASSPATH=$CASSANDRA_HOME/lib
 DEAMON=$CASSANDRA_BIN/cassandra
 
 start() {
         echo -n "Starting Cassandra... "
+         #Ensures that if a VM image is created and booted, at boot time the machine IP will be inserted in Cassandra config file
+	sed -i.bak 's/listen_address:.*/listen_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
+        sed -i.bak 's/- seeds:.*/- seeds: \\\"\`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`\\\"/' $CASSANDRA_CONFIG/cassandra.yaml  
+	sed -i.bak 's/rpc_address:.*/rpc_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
+        sed -i.bak 's/\<native_transport_port:.*/native_transport_port: $CASSANDRA_NATIVE_CQL_PORT/' $CASSANDRA_CONFIG/cassandra.yaml
+        sed -i.bak 's/\<rpc_port:.*/rpc_port: $CASSANDRA_RPC_PORT/' $CASSANDRA_CONFIG/cassandra.yaml  
+	sed -i.bak 's/\<storage_port:.*/storage_port: $CASSANDRA_TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml           
+
         $DEAMON -p /var/run/cassandra.pid
         echo "OK"
         return 0
