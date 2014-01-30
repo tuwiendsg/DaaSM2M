@@ -1,10 +1,13 @@
-#!/bin/sh
-#
-#Licensed under the EUPL V.1.1 
-#http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
-# 
-# description: Starts and stops Cassandra
-# update deamon path to point to the cassandra executable
+### BEGIN INIT INFO
+# Provides:          cassandra
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start a new daas-service
+# Description:       To start-stop daas-service
+### END INIT INFO
+
 
 CASSANDRA_HOME=
 CASSANDRA_CONFIG=$CASSANDRA_HOME/conf
@@ -18,14 +21,16 @@ DEAMON=$CASSANDRA_BIN/cassandra
 
 
 start() {
-        echo -n "Starting Cassandra... "
+         echo -n "Starting Cassandra... "
         MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+        eval "sed -i.bak  's/127.0.0.1 $(eval hostname)//' /etc/hosts"
+        echo "127.0.0.1 $(eval hostname)" | sudo -S tee -a /etc/hosts
         eval "sed -i.bak 's/listen_address:.*/listen_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
         eval "sed -i.bak 's/- seeds:.*/- seeds: \"$MY_IP\"/' $CASSANDRA_CONFIG/cassandra.yaml"
         eval "sed -i.bak 's/rpc_address:.*/rpc_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
         eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $(eval $CASSANDRA_NATIVE_CQL_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
         eval "sed -i.bak 's/rpc_port:.*/rpc_port: $(eval $CASSANDRA_RPC_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
-        eval "sed -i.bak 's/storage_port:.*/storage_port: $(eval $CASSANDRA_TCP_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"   
+        eval "sed -i.bak 's/storage_port:.*/storage_port: $(eval $CASSANDRA_TCP_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
              
         $DEAMON -p /var/run/cassandra.pid
         echo "OK"
