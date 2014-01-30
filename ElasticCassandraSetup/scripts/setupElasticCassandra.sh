@@ -41,6 +41,7 @@ case $REPLY in
            #prepare script that scales down the cluster by removing the less loaded node
            eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./scaleInCluster.sh"
 	   eval "sed -i 's#\<CASSANDRA_HOME=.*#CASSANDRA_HOME=$CASSANDRA_HOME#' ./cassandra" 
+           eval "sed -i 's#\./Config#$CURRENT_DIR/Config#' ./cassandra"
             
            #eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./createDefaultCassandraKeyspace.sh"
            #eval "sed -i 's#\<CURRENT_DIR=.*#CURRENT_DIR=$CURRENT_DIR#' ./createDefaultCassandraKeyspace.sh"
@@ -68,7 +69,8 @@ case $REPLY in
            #prepare script for gathering seed and current IP and configuring Cassandra
            eval "sed -i 's#\<CASSANDRA_CONFIG=.*#CASSANDRA_CONFIG=$CASSANDRA_CONFIG#' ./joinRing";
            eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./joinRing";
-	   
+	   eval "sed -i 's#\<source ./Config=.*#source $CURRENT_DIR/Config#' ./joinRing" 
+ 
 	   #execute the specified command for retrieving user supplied VM contextualization data
            eval "sed -i 's#\<cassandraSeedIPSource=.*#cassandraSeedIPSource=\"$CASSANDRA_SEED_IP_SOURCE\"#' ./joinRing";            
 
@@ -83,6 +85,7 @@ case $REPLY in
            #if node, ensure it does not start automatically
            if [ -f /etc/init.d/cassandra ]
 		then
+                   echo "Removing cassandra service and replacing with joinRing
 		   sudo rm /etc/init.d/cassandra
            fi     
            #NOTE: the cassandra service is not started yet, as not to generate any load token yet. To start the service one must call "joinRing".

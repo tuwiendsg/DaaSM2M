@@ -19,24 +19,17 @@ CASSANDRA_BIN=
 DAEMON=$CASSANDRA_BIN/cassandra
 cassandraConfFile=$CASSANDRA_CONFIG/cassandra.yaml
 
-
-. /lib/lsb/init-functions
-
-if [ ! -d /tmp/daas ]; then
-  mkdir /tmp/daas
-fi
-
-
+source ./Config
+ 
 case "$1" in
 	start)
                 #configure cassandra.yaml
-                sed -i.bak 's/listen_address:.*/listen_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
-                sed -i.bak 's/- seeds:.*/- seeds: \\\"\`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`\\\"/' $CASSANDRA_CONFIG/cassandra.yaml  
-	        sed -i.bak 's/rpc_address:.*/rpc_address: \`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*\`/' $CASSANDRA_CONFIG/cassandra.yaml
-                sed -i.bak 's/\<native_transport_port:.*/native_transport_port: $CASSANDRA_NATIVE_CQL_PORT/' $CASSANDRA_CONFIG/cassandra.yaml
-                sed -i.bak 's/\<rpc_port:.*/rpc_port: $CASSANDRA_RPC_PORT/' $CASSANDRA_CONFIG/cassandra.yaml  
-  	        sed -i.bak 's/\<storage_port:.*/storage_port: $CASSANDRA_TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml        
-                
+		MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+		eval "sed -i.bak 's/- seeds:.*/- seeds: \"$(eval $CASSANDRA_SEED_IP_SOURCE)\"/' $CASSANDRA_CONFIG/cassandra.yaml"
+		eval "sed -i.bak 's/rpc_address:.*/rpc_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
+		eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $(eval $CASSANDRA_NATIVE_CQL_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
+		eval "sed -i.bak 's/rpc_port:.*/rpc_port: $(eval $CASSANDRA_RPC_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"
+		eval "sed -i.bak 's/storage_port:.*/storage_port: $(eval $CASSANDRA_TCP_PORT)/' $CASSANDRA_CONFIG/cassandra.yaml"                
                 SEED_IP=`eval $cassandraSeedIPSource`   
 	        if [ $? -eq 0 ];then
 	    	  echo "Command $cassandraSeedIPSource executed successfully"
