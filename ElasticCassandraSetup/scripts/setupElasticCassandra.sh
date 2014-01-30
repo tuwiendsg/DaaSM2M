@@ -53,8 +53,6 @@ case $REPLY in
 	   # execute 'decomission CASSANDRA_NODE_IP' before removing Cassandra Node, to ensure proper cleanup	
 	   eval "sed -i 's#\<JAVA=.*#JAVA=$JAVA_HOME/bin/java#' ./decommissionNode.sh"
            eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' ./decommissionNode.sh"
-           sudo -S chmod +x ./decommissionNode.sh
-	   sudo -S ln -s $CURRENT_DIR/decommissionNode.sh /bin/decommission
 
            #Copy script to ensure cassandra main starts automatically
 	   sudo -S cp ./cassandra /etc/init.d/cassandra
@@ -77,11 +75,14 @@ case $REPLY in
            #Ensures that if a VM image is created and booted, at boot time the machine IP will be inserted in Cassandra config file by inserting in the /etc/rc.local
            
 	   #execute rc.local to configure local iP
-           #/etc/rc.local
+           sudo -S chmod +x ./decommissionNode.sh
+	   sudo -S ln -s $CURRENT_DIR/decommissionNode.sh /bin/decommission  
+
            sudo -S cp ./cassandra /etc/init.d/joinRing
 	   sudo -S chmod +x /etc/init.d/joinRing
 	   sudo -S update-rc.d joinRing defaults
            
+
            #if node, ensure it does not start automatically
            if [ -f /etc/init.d/cassandra ]
 		then

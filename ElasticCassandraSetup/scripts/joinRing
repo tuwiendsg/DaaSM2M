@@ -1,5 +1,5 @@
 ### BEGIN INIT INFO
-# Provides:          daas-service
+# Provides:          joinRing
 # Required-Start:
 # Required-Stop:
 # Default-Start:     2 3 4 5
@@ -21,6 +21,8 @@ cassandraConfFile=$CASSANDRA_CONFIG/cassandra.yaml
 
 . ./Config
  
+. /lib/lsb/init-functions
+
 case "$1" in
 	start)
                 #configure cassandra.yaml
@@ -56,11 +58,13 @@ case "$1" in
 	        fi   
                 eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $NATIVE_PORT/' $CASSANDRA_CONFIG/cassandra.yaml"
 
-                $CASSANDRA_BIN/cassandra -p /var/run/cassandra.pid
+                sudo start-stop-daemon --start --quiet --pidfile /var/run/cassandra.pid --make-pidfile --background --exec $CASSANDRA_BIN/cassandra
                 echo "OK"
-		;;
-	stop) 
-                kill $(cat /var/run/cassandra.pid)
+                ;;
+	stop)
+                MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+                decommission $MY_IP
+                sudo start-stop-daemon --stop --quiet --pidfile $(cat /var/run/cassandra.pid)
  		echo "OK"
 		;;
 	restart)
