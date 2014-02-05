@@ -8,13 +8,12 @@
         </formats>
 
         <fileSets>
-                <!--<fileSet>
-                        <directory>${project.basedir}/documentation</directory>
-                        <outputDirectory>/</outputDirectory>
-                        <includes>
-                                <include>Documentation.pdf</include>
-                        </includes>
-                </fileSet>-->
+                <fileSet>
+                        <directory>${project.basedir}/gangliaPlugIns/</directory>
+                        <outputDirectory>/gangliaPlugIns</outputDirectory>
+                        <fileMode>0755</fileMode>
+                        <lineEnding>unix</lineEnding>
+                </fileSet>
                 <fileSet>
                         <directory>${project.basedir}/scripts</directory>
                         <outputDirectory>/</outputDirectory>
