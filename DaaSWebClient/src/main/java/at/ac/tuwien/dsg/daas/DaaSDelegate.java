@@ -41,10 +41,6 @@ public class DaaSDelegate implements DataManagementAPI {
     private Monitor monitor;
 
     static {
-        instance = new DaaSDelegate();
-    }
-
-    static {
 
         String date = new Date().toString();
         date = date.replace(" ", "_");
@@ -66,6 +62,14 @@ public class DaaSDelegate implements DataManagementAPI {
             Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
         }
 
+    }
+
+    static {
+        try {
+            instance = new DaaSDelegate();
+        } catch (Exception e) {
+            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
+        }
     }
 
     {
