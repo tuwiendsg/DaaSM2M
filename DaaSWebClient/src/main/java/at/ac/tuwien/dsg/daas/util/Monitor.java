@@ -64,7 +64,6 @@ public class Monitor {
     public synchronized void monitorRT(Long newResponseTime) {
         responseTime.addAndGet(newResponseTime);
         troughput.incrementAndGet();
-        Logger.getLogger(Monitor.class.getName()).log(Level.INFO, "Req received");
     }
 
     /**
@@ -78,7 +77,6 @@ public class Monitor {
 
     private synchronized void recordMonitoring() {
         long avgTpt = troughput.get();
-        Logger.getLogger(Monitor.class.getName()).log(Level.INFO, "T = " + avgTpt);
         if (avgTpt > 0) {
             averageResponseTime.set(responseTime.get() / avgTpt);
             averageTroughput.set(avgTpt);

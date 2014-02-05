@@ -31,7 +31,7 @@ def _reinitiateDB():
         #create keyspace    
         executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/keyspace','<Keyspace name="' + keyspaceName + '"/>','application/xml') 
         #create table    
-        executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="'+tablename+'" primaryKeyName="key" primaryKeyType="int"><Keyspace name="' + keyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>','application/xml') 
+        executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="'+tablename+'" primaryKeyName="key" primaryKeyType="uuid"><Keyspace name="' + keyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>','application/xml') 
      
 if __name__=='__main__':
     _reinitiateDB()

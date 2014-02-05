@@ -56,12 +56,12 @@ def _issueWriteRequest():
             key = str(uuid.uuid1())
             generatedKeys.append(key)
             #add row
-            createRowStatement='<CreateRowsStatement><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Row><Column name="key" value="%s"/><Column name="sensorName" value="SensorY"/><Column name="sensorValue" value="%s"/> </Row></CreateRowsStatement>' % (key,str(uuid.uuid1()))
+            createRowStatement='<CreateRowsStatement><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Row><Column name="key" value="%s"/><Column name="sensorName" value="SensorY"/><Column name="sensorValue" value="%s"/> </Row></CreateRowsStatement>' % (key,random.uniform(1, 2000))
             executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table/row', createRowStatement)
 
 def _issueReadRequest():
             if len(generatedKeys) > 0:
-                   deleteRowQuerry = '<Query><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Condition>key=%s</Condition></Query>   '
+                   deleteRowQuerry = '<Query><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Condition>key=%s</Condition></Query>' % (generatedKeys.pop(random.randint(0,len(generatedKeys)-1)))
                    executeRESTCall('DELETE', BaseURL, 'DaaS/api/xml/table/row', deleteRowQuerry)
 
 if __name__=='__main__':
