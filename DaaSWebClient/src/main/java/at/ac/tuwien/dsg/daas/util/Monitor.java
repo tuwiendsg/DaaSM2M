@@ -9,7 +9,10 @@ package at.ac.tuwien.dsg.daas.util;
  *
  * @author daniel-tuwien
  */
+import at.ac.tuwien.dsg.daas.services.M2M;
 import java.util.concurrent.atomic.AtomicLong;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Created with IntelliJ IDEA. User: daniel-tuwien Date: 4/29/13 Time: 2:07 PM
@@ -61,6 +64,7 @@ public class Monitor {
     public synchronized void monitorRT(Long newResponseTime) {
         responseTime.addAndGet(newResponseTime);
         troughput.incrementAndGet();
+        Logger.getLogger(Monitor.class.getName()).log(Level.INFO, "Req received");
     }
 
     /**
@@ -74,6 +78,7 @@ public class Monitor {
 
     private synchronized void recordMonitoring() {
         long avgTpt = troughput.get();
+        Logger.getLogger(Monitor.class.getName()).log(Level.INFO, "T = " + avgTpt);
         if (avgTpt > 0) {
             averageResponseTime.set(responseTime.get() / avgTpt);
             averageTroughput.set(avgTpt);

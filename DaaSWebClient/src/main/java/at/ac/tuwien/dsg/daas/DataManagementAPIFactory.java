@@ -41,28 +41,7 @@ public class DataManagementAPIFactory {
     private static List<DataManagementAPI> activeCassandraManagementAPIs;
 
     static {
-
-        String date = new Date().toString();
-        date = date.replace(" ", "_");
-        date = date.replace(":", "_");
-        System.getProperties().put("recording_date", date);
-
         activeCassandraManagementAPIs = new ArrayList<DataManagementAPI>();
-        InputStream log4jStream;
-        try {
-            log4jStream = ConfigurationFilesLoader.getLog4JPropertiesStream();
-            if (log4jStream != null) {
-                PropertyConfigurator.configure(log4jStream);
-                try {
-                    log4jStream.close();
-                } catch (IOException e) {
-                    Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-        }
-
     }
 
     private DataManagementAPIFactory() {

@@ -11,8 +11,12 @@ import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
+import at.ac.tuwien.dsg.daas.util.ConfigurationFilesLoader;
 import at.ac.tuwien.dsg.daas.util.Monitor;
 import com.datastax.driver.core.Row;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +25,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
@@ -35,6 +42,30 @@ public class DaaSDelegate implements DataManagementAPI {
 
     static {
         instance = new DaaSDelegate();
+    }
+
+    static {
+
+        String date = new Date().toString();
+        date = date.replace(" ", "_");
+        date = date.replace(":", "_");
+        System.getProperties().put("recording_date", date);
+
+        InputStream log4jStream;
+        try {
+            log4jStream = ConfigurationFilesLoader.getLog4JPropertiesStream();
+            if (log4jStream != null) {
+                PropertyConfigurator.configure(log4jStream);
+                try {
+                    log4jStream.close();
+                } catch (IOException e) {
+                    Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
+        }
+
     }
 
     {
@@ -145,7 +176,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized MonitoringData getMonitoringData() {
         long[] l = monitor.getMonitoringData();
-        return new MonitoringData(l[0],l[1]);
+        return new MonitoringData(l[0], l[1]);
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

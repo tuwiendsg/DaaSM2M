@@ -13,15 +13,18 @@ def _getData():
                   'Accept':'application/xml, multipart/related'
 	    }
  
-            connection.request('GET', url+'/monitoring',headers=headers,)
-	    result = connection.getresponse()
-            result_xml = result.read()
-            #print result_xml
-            dom = parseString(result_xml)
-            xmlTag = dom.getElementsByTagName('responseTime')
-            #print int(xmlTag[0].firstChild.nodeValue)
-            #returns only avg reponse time
-            return int(xmlTag[0].firstChild.nodeValue)
+            try:
+               connection.request('GET', url+'/monitoring',headers=headers,)
+               result = connection.getresponse()
+               result_xml = result.read()
+               #print result_xml
+               dom = parseString(result_xml)
+               xmlTag = dom.getElementsByTagName('responseTime')
+               #print int(xmlTag[0].firstChild.nodeValue)
+               #returns only avg reponse time
+               return int(xmlTag[0].firstChild.nodeValue)
+            except:
+               return -1
 
 
 def temp_handler(name):

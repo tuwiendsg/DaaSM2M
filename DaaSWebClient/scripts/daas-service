@@ -18,7 +18,7 @@ NAME=daas-service
 DAEMON=DaaS.war.jar
 PIDDIR=/tmp/daas
 PIDFILE=$PIDDIR/
-PORT=8081
+PORT=8080
 HAPROXY_IP=109.231.122.200
 
 IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
