@@ -2,6 +2,10 @@
 
 CURRENT_DIR=$(pwd)
 
+sudo -S add-apt-repository ppa:vbernat/haproxy-1.5
+
+sudo -S apt-get update
+
 sudo -S apt-get install haproxy
 
 #set HAProxy config path in 
