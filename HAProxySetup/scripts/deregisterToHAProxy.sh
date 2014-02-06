@@ -10,5 +10,6 @@ if [ -z $2 ]
      #sed with  /d deletes matching row 
      eval "sed -i '/server $IP $IP:$PORT maxconn 2000/d' $HAPROXY_CONFIG_FILE"
      haproxy -f $HAPROXY_CONFIG_FILE -p /tmp/haproxy.pid -sf $(cat /tmp/haproxy.pid)
+     chmod 0777 /tmp/haproxy
 fi
 
