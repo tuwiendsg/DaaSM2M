@@ -62,6 +62,7 @@ def _issueWriteRequest():
 def _issueReadRequest():
             if len(generatedKeys) > 0:
                    deleteRowQuerry = '<Query><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Condition>key=%s</Condition></Query>' % (generatedKeys.pop(random.randint(0,len(generatedKeys)-1)))
+                   executeRESTCall('POST', BaseURL, 'DaaS/api/table/row', deleteRowQuerry)
                    executeRESTCall('DELETE', BaseURL, 'DaaS/api/xml/table/row', deleteRowQuerry)
 
 if __name__=='__main__':
