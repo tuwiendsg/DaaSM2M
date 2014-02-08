@@ -11,7 +11,7 @@
 RUN_MODE="daemons"
 
 DAEMONDIR=./
-DAEMON=workloadGenerator.py
+DAEMON=python ./workloadGenerator.py
 PIDDIR=/tmp/
 PIDFILE=$PIDDIR/workload-service.pid
 
@@ -20,7 +20,7 @@ PIDFILE=$PIDDIR/workload-service.pid
 case "$1" in
 	start)
 		log_daemon_msg "Starting workload daemon"
-        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDFILE --make-pidfile --background --exec python $DAEMON; then
+        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDFILE --make-pidfile --background --exec $DAEMON; then
 		    log_end_msg 1
 		    exit 1
 		fi
