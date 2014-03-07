@@ -94,19 +94,36 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public synchronized void createKeyspace(Keyspace keyspace) {
+        Date before = new Date();
         dataManagementAPI.createKeyspace(keyspace);
+        Date after = new Date();
+
+        monitor.monitorRT(after.getTime() - before.getTime());
     }
 
     public synchronized List<Row> listKeyspaces() {
-        return dataManagementAPI.listKeyspaces();
+        Date before = new Date();
+        List<Row> res = dataManagementAPI.listKeyspaces();
+        Date after = new Date();
+
+        monitor.monitorRT(after.getTime() - before.getTime());
+        return res;
     }
 
     public synchronized void dropKeyspace(Keyspace keyspace) {
+        Date before = new Date();
         dataManagementAPI.dropKeyspace(keyspace);
+        Date after = new Date();
+
+        monitor.monitorRT(after.getTime() - before.getTime());
     }
 
     public synchronized void createTable(Table table) {
+        Date before = new Date();
         dataManagementAPI.createTable(table);
+        Date after = new Date();
+
+        monitor.monitorRT(after.getTime() - before.getTime());
     }
 
     public synchronized void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
@@ -118,7 +135,11 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public synchronized void dropTable(Table table) {
+        Date before = new Date();
         dataManagementAPI.dropTable(table);
+        Date after = new Date();
+
+        monitor.monitorRT(after.getTime() - before.getTime());
     }
 
     public synchronized Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
