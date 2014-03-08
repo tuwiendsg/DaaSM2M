@@ -41,6 +41,7 @@ public class Monitor {
         averageTroughput = new AtomicLong(0);
         responseTime = new AtomicLong(0);
         troughput = new AtomicLong(0);
+        outstandingRequests = new AtomicLong(0);
 
         this.monitoringIntervalInMilliseconds = monitoringIntervalInMilliseconds;
         selfReference = this;
