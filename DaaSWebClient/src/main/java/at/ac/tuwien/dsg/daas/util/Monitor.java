@@ -36,12 +36,15 @@ public class Monitor {
     //the response time will be 0 for a long time, and then will be  very large, and then small again
     boolean monitoringDataRead = false;
 
-    public Monitor(int monitoringIntervalInMilliseconds) {
+    {
         averageResponseTime = new AtomicLong(0);
         averageTroughput = new AtomicLong(0);
         responseTime = new AtomicLong(0);
         troughput = new AtomicLong(0);
         outstandingRequests = new AtomicLong(0);
+    }
+
+    public Monitor(int monitoringIntervalInMilliseconds) {
 
         this.monitoringIntervalInMilliseconds = monitoringIntervalInMilliseconds;
         selfReference = this;
