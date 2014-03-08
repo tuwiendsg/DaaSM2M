@@ -85,15 +85,15 @@ public class DaaSDelegate implements DataManagementAPI {
                 CassandraAccessProperties.getCassandraAccessPort());
     }
 
-    public synchronized void openConnection() {
+    public  void openConnection() {
         dataManagementAPI.openConnection();
     }
 
-    public synchronized void closeConnection() {
+    public  void closeConnection() {
         dataManagementAPI.openConnection();
     }
 
-    public synchronized void createKeyspace(Keyspace keyspace) {
+    public  void createKeyspace(Keyspace keyspace) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -107,7 +107,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized List<Row> listKeyspaces() {
+    public  List<Row> listKeyspaces() {
         try {
             Date before = new Date();
 
@@ -123,7 +123,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void dropKeyspace(Keyspace keyspace) {
+    public  void dropKeyspace(Keyspace keyspace) {
         try {
             Date before = new Date();
 
@@ -138,7 +138,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void createTable(Table table) {
+    public  void createTable(Table table) {
         try {
             Date before = new Date();
 
@@ -153,15 +153,15 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+    public  void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
         dataManagementAPI.createIndex(keyspaceName, tableName, columns);
     }
 
-    public synchronized void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+    public  void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
         dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
     }
 
-    public synchronized void dropTable(Table table) {
+    public  void dropTable(Table table) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -174,7 +174,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+    public  Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -190,7 +190,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized List<Row> selectXRowsFromTable(TableQuery querry) {
+    public  List<Row> selectXRowsFromTable(TableQuery querry) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -206,7 +206,8 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
+    public  void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
+        
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -220,7 +221,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
+    public  void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -234,7 +235,7 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized void deleteRowsFromTable(TableQuery query) {
+    public  void deleteRowsFromTable(TableQuery query) {
         try {
             Date before = new Date();
             monitor.markOutstandingRequest();
@@ -248,15 +249,15 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    public synchronized String getCassandraHostIP() {
+    public  String getCassandraHostIP() {
         return dataManagementAPI.getCassandraHostIP();
     }
 
-    public synchronized int getCasandraPort() {
+    public  int getCasandraPort() {
         return dataManagementAPI.getCasandraPort();
     }
 
-    public synchronized MonitoringData getMonitoringData() {
+    public  MonitoringData getMonitoringData() {
         long[] l = monitor.getMonitoringData();
         return new MonitoringData(l[0], l[1]);
 
