@@ -94,47 +94,63 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public synchronized void createKeyspace(Keyspace keyspace) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.createKeyspace(keyspace);
-        Date after = new Date();
+            dataManagementAPI.createKeyspace(keyspace);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized List<Row> listKeyspaces() {
-        Date before = new Date();
+        try {
+            Date before = new Date();
 
-        monitor.markOutstandingRequest();
+            monitor.markOutstandingRequest();
 
-        List<Row> res = dataManagementAPI.listKeyspaces();
-        Date after = new Date();
+            List<Row> res = dataManagementAPI.listKeyspaces();
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
-        return res;
+            monitor.monitorRT(after.getTime() - before.getTime());
+            return res;
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void dropKeyspace(Keyspace keyspace) {
-        Date before = new Date();
+        try {
+            Date before = new Date();
 
-        monitor.markOutstandingRequest();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.dropKeyspace(keyspace);
-        Date after = new Date();
+            dataManagementAPI.dropKeyspace(keyspace);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void createTable(Table table) {
-        Date before = new Date();
+        try {
+            Date before = new Date();
 
-        monitor.markOutstandingRequest();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.createTable(table);
-        Date after = new Date();
+            dataManagementAPI.createTable(table);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
@@ -146,66 +162,90 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public synchronized void dropTable(Table table) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
-        dataManagementAPI.dropTable(table);
-        Date after = new Date();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
+            dataManagementAPI.dropTable(table);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        Row r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
-        Date after = new Date();
+            Row r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
 
-        return r;
+            return r;
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized List<Row> selectXRowsFromTable(TableQuery querry) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        List<Row> r = dataManagementAPI.selectXRowsFromTable(querry);
-        Date after = new Date();
+            List<Row> r = dataManagementAPI.selectXRowsFromTable(querry);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
 
-        return r;
+            return r;
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
-        Date after = new Date();
+            dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
-        Date after = new Date();
+            dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized void deleteRowsFromTable(TableQuery query) {
-        Date before = new Date();
-        monitor.markOutstandingRequest();
+        try {
+            Date before = new Date();
+            monitor.markOutstandingRequest();
 
-        dataManagementAPI.deleteRowsFromTable(query);
-        Date after = new Date();
+            dataManagementAPI.deleteRowsFromTable(query);
+            Date after = new Date();
 
-        monitor.monitorRT(after.getTime() - before.getTime());
+            monitor.monitorRT(after.getTime() - before.getTime());
+        } finally {
+            monitor.removeOutstandingRequest();
+        }
     }
 
     public synchronized String getCassandraHostIP() {
@@ -219,6 +259,7 @@ public class DaaSDelegate implements DataManagementAPI {
     public synchronized MonitoringData getMonitoringData() {
         long[] l = monitor.getMonitoringData();
         return new MonitoringData(l[0], l[1]);
+
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

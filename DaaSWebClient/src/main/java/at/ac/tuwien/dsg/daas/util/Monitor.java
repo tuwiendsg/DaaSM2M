@@ -77,7 +77,6 @@ public class Monitor {
      * @param newResponseTime in milliseconds
      */
     public synchronized void monitorRT(Long newResponseTime) {
-        outstandingRequests.decrementAndGet();
         //if monitoring data read, when we have new data, reset the monitoring items
         if (monitoringDataRead) {
             monitoringDataRead = false;
