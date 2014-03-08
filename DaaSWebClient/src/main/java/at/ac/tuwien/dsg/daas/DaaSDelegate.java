@@ -95,6 +95,8 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void createKeyspace(Keyspace keyspace) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
+
         dataManagementAPI.createKeyspace(keyspace);
         Date after = new Date();
 
@@ -103,6 +105,9 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized List<Row> listKeyspaces() {
         Date before = new Date();
+
+        monitor.markOutstandingRequest();
+
         List<Row> res = dataManagementAPI.listKeyspaces();
         Date after = new Date();
 
@@ -112,6 +117,9 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void dropKeyspace(Keyspace keyspace) {
         Date before = new Date();
+
+        monitor.markOutstandingRequest();
+
         dataManagementAPI.dropKeyspace(keyspace);
         Date after = new Date();
 
@@ -120,6 +128,9 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void createTable(Table table) {
         Date before = new Date();
+
+        monitor.markOutstandingRequest();
+
         dataManagementAPI.createTable(table);
         Date after = new Date();
 
@@ -136,6 +147,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void dropTable(Table table) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
         dataManagementAPI.dropTable(table);
         Date after = new Date();
 
@@ -144,6 +156,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
 
         Row r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
         Date after = new Date();
@@ -155,6 +168,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized List<Row> selectXRowsFromTable(TableQuery querry) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
 
         List<Row> r = dataManagementAPI.selectXRowsFromTable(querry);
         Date after = new Date();
@@ -166,6 +180,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
 
         dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
         Date after = new Date();
@@ -175,6 +190,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
 
         dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
         Date after = new Date();
@@ -184,6 +200,7 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public synchronized void deleteRowsFromTable(TableQuery query) {
         Date before = new Date();
+        monitor.markOutstandingRequest();
 
         dataManagementAPI.deleteRowsFromTable(query);
         Date after = new Date();

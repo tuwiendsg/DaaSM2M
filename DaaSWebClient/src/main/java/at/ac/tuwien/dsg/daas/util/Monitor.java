@@ -28,6 +28,8 @@ public class Monitor {
     private AtomicLong averageResponseTime;
     private AtomicLong averageTroughput;
 
+    private AtomicLong outstandingRequests;
+
     private Monitor selfReference;
     //used to reset monitoring counter
     //an issue is that if I reset it automatically at 1 second, if there are long running querries,
@@ -62,10 +64,19 @@ public class Monitor {
 
     }
 
+    public synchronized void markOutstandingRequest() {
+        outstandingRequests.incrementAndGet();
+    }
+
+    public synchronized void removeOutstandingRequest() {
+        outstandingRequests.decrementAndGet();
+    }
+
     /**
      * @param newResponseTime in milliseconds
      */
     public synchronized void monitorRT(Long newResponseTime) {
+        outstandingRequests.decrementAndGet();
         //if monitoring data read, when we have new data, reset the monitoring items
         if (monitoringDataRead) {
             monitoringDataRead = false;
@@ -96,8 +107,10 @@ public class Monitor {
             averageTroughput.set(0);
         }
         monitoringDataRead = true;
-//        troughput.set(0);
-//        responseTime.set(0);
+        if (outstandingRequests.get() == 0) {
+            troughput.set(0);
+            responseTime.set(0);
+        }
     }
 
 }
