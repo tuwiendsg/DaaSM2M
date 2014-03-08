@@ -29,6 +29,10 @@ public class Monitor {
     private AtomicLong averageTroughput;
 
     private Monitor selfReference;
+    //used to reset monitoring counter
+    //an issue is that if I reset it automatically at 1 second, if there are long running querries,
+    //the response time will be 0 for a long time, and then will be  very large, and then small again
+    boolean monitoringDataRead = false;
 
     public Monitor(int monitoringIntervalInMilliseconds) {
         averageResponseTime = new AtomicLong(0);
@@ -62,8 +66,15 @@ public class Monitor {
      * @param newResponseTime in milliseconds
      */
     public synchronized void monitorRT(Long newResponseTime) {
-        responseTime.addAndGet(newResponseTime);
-        troughput.incrementAndGet();
+        //if monitoring data read, when we have new data, reset the monitoring items
+        if (monitoringDataRead) {
+            monitoringDataRead = false;
+            responseTime.set(newResponseTime);
+            troughput.set(1);
+        } else {
+            responseTime.addAndGet(newResponseTime);
+            troughput.incrementAndGet();
+        }
     }
 
     /**
@@ -84,8 +95,9 @@ public class Monitor {
             averageResponseTime.set(0);
             averageTroughput.set(0);
         }
-        troughput.set(0);
-        responseTime.set(0);
+        monitoringDataRead = true;
+//        troughput.set(0);
+//        responseTime.set(0);
     }
 
 }
