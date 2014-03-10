@@ -8,14 +8,16 @@ httplib.HTTPConnection.debuglevel = 0
 KeyspaceName = 'm2m'
 tablename = 'sensor'
 
-HAProxyIP = 'localhost'
+HAProxyIP = '10.99.0.39'
 HAProxyport = '8080'
 BaseURL = HAProxyIP+':'+HAProxyport
 
-minOperations = 10
-maxOperations = 50
+minOperations = 100
+maxOperations = 100
 
 generatedKeys = []
+generatedTables = []
+
 
 def executeRESTCall(restMethod, serviceBaseURL, resourceName,  content):
         connection =  httplib.HTTPConnection(serviceBaseURL)
@@ -39,7 +41,7 @@ def _writeManyInParralel(writes):
               generatedProcesses.append(p)
               p.start()
             for p in generatedProcesses:
-              p.join()
+                            p.join()
 
 def _readManyInParralel(reads):
             generatedProcesses = []
@@ -51,47 +53,77 @@ def _readManyInParralel(reads):
             for p in generatedProcesses:
               p.join()
 
- 
 def _issueWriteRequest():
-            key = str(uuid.uuid1())
-            generatedKeys.append(key)
+            #key = str(uuid.uuid1())
+            table=tablename
+            #table = 'table_'+str(tableIndex)
+            #print table
+            #system.exit(1)
+            #generatedKeys.append(key)
+            rowsToCreate = 7 #random.randrange(10,50)
+            #10% are create table
+            #for i in range(0, int(rowsToCreate*0.1)):
+            #  tableIndex = str(random.randrange(1, 11111111))
+            #  generatedTables.append('table_'+tableIndex)      
+            #  executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="table_'+tableIndex+'" primaryKeyName="key" primaryKeyType="uuid"><Keyspace name="' + KeyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>')
+
+            createRowStatement='<CreateRowsStatement><Table name="'+table+'"><Keyspace name="' + KeyspaceName + '"/></Table>'
+            for i in range(0, int(rowsToCreate)):
+              key = str(uuid.uuid1())
+              generatedKeys.append(key)
+              createRowStatement=createRowStatement+('<Row><Column name="key" value="%s"/><Column name="sensorName" value="SensorY"/><Column name="sensorValue" value="%s"/> </Row>' % (key,random.uniform(1, 20000)))
+
             #add row
-            createRowStatement='<CreateRowsStatement><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Row><Column name="key" value="%s"/><Column name="sensorName" value="SensorY"/><Column name="sensorValue" value="%s"/> </Row></CreateRowsStatement>' % (key,random.uniform(1, 2000))
+            #executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="'+table+'" primaryKeyName="key" primaryKeyType="uuid"><Keyspace name="' + KeyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>')
+            createRowStatement=createRowStatement + '</CreateRowsStatement>'
             executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table/row', createRowStatement)
 
 def _issueReadRequest():
-            if len(generatedKeys) > 0:
-                   deleteRowQuerry = '<Query><Table name="'+tablename+'"><Keyspace name="' + KeyspaceName + '"/></Table><Condition>key=%s</Condition></Query>' % (generatedKeys.pop(random.randint(0,len(generatedKeys)-1)))
-                   executeRESTCall('POST', BaseURL, 'DaaS/api/table/row', deleteRowQuerry)
-                   executeRESTCall('DELETE', BaseURL, 'DaaS/api/xml/table/row', deleteRowQuerry)
+            rowsToDelete = 7 #random.randrange(10,50)
+            keysToDelete = generatedKeys.pop(random.randint(0,len(generatedKeys)-1));
+            for i in range(0, int (rowsToDelete)):
+               if len(generatedKeys) > 0:
+                   keysToDelete = keysToDelete + ',' + generatedKeys.pop(random.randint(0,len(generatedKeys)-1))
+
+            table = tablename # generatedTables.pop(random.randint(0,len(generatedTables)-1))
+            deleteRowQuerry = '<Query><Table name="'+table+'"><Keyspace name="' + KeyspaceName + '"/></Table><Condition>key in ('+keysToDelete+')</Condition></Query>'
+            #executeRESTCall('POST', BaseURL, 'DaaS/api/xml/table/row', deleteRowQuerry)
+            executeRESTCall('DELETE', BaseURL, 'DaaS/api/xml/table/row', deleteRowQuerry)
+
+            #for i in range(0, int(rowsToDelete*0.1)):
+            #  tableToDelete = generatedTables.pop(random.randint(0,len(generatedTables)-1))
+            #  deleteTableQuerry = '<Table name="'+ tableToDelete +'"><Keyspace name="' + KeyspaceName + '"/></Table>'
+            #  executeRESTCall('DELETE',BaseURL,'DaaS/api/xml/table',deleteTableQuerry)
 
 if __name__=='__main__':
         #behave normally for 500 tries = 1000 seconds
      while True:
-        for i in range(0,100):
-            opCount = random.randint(minOperations,maxOperations);
+        for i in range(0,500):
+            opCount = minOperations #random.randint(minOperations,maxOperations);
             _writeManyInParralel(opCount)
-            _readManyInParralel(opCount)
-            miOperations = minOperations + 2
-            maxOperations = maxOperations + 2
-            time.sleep(1)
-            #print "invoke " + minReads + " " + maxReads
+            #_readManyInParralel(opCount)
+            minOperations = minOperations + 1
+            maxOperations = maxOperations + 1
+            #time.sleep(1)
+            #print "invoke " + min
         #burst
         writesInBurst = maxOperations + 100
         readsInBurst = maxOperations + 100;
-        for i in range(0,50):
+        for i in range(0,100):
             #minReads += 50
             #maxRead += 50
-            print "burst"
+        #    print "burst"
             _writeManyInParralel(writesInBurst)
             _readManyInParralel(readsInBurst)
-            time.sleep(1)
+            #time.sleep(1)
         #cool off
-        for i in range(0,100):
-            minOperations = minOperations - 2
-            maxOperations = maxOperations - 2
-            opCount = random.randint(minOperations,maxOperations)
-            _writeManyInParralel(opCount)
+        print "cool off"
+        for i in range(0,500):
+            minOperations = minOperations - 1
+            maxOperations = maxOperations - 1
+            opCount = minOperations # random.randint(minOperations,maxOperations)
+            #_writeManyInParralel(opCount)
             _readManyInParralel(opCount)
-            time.sleep(1)
-        time.sleep(10)
+            #time.sleep(1)
+            time.sleep(10)
+

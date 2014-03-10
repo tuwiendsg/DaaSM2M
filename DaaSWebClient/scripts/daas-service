@@ -23,6 +23,12 @@ HAPROXY_IP=109.231.122.200
 
 IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 
+#contextualize DaaS for Cassadra
+CASSANDRA_SEED_IP="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_SEED_IP=[0-9.]* | grep -o [0-9.]*"
+eval "sed -i 's#\<CassandraNode\.IP =.*#CassandraNode\.IP =$CASSANDRA_SEED_IP#' $DAEMONDIR/config/cassandraAccess.properties"
+eval "sed -i 's#\<CassandraNode\.PORT =.*#CassandraNode\.PORT =$CASSANDRA_SEED_PORT#' $DAEMONDIR/config/cassandraAccess.properties"
+
+
 HAPROXY_REGISTER_COMMAND=registerToHAProxy
 HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
