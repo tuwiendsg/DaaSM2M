@@ -1,0 +1,25 @@
+modules {
+  module {
+    name = "getResponseTime"
+    language = "python"
+  }
+   module {
+    name = "getThroughput"
+    language = "python"
+  }
+  
+}
+
+collection_group {
+  collect_every = 5
+  time_threshold = 5
+  metric {
+    name = "responseTime"
+  }
+
+  metric {
+    name = "throughput"
+  }
+  
+}
+

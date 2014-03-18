@@ -14,13 +14,13 @@ export CASSANDRA_SEED_IP_SOURCE="curl http://169.254.169.254/latest/user-data | 
 
 #can put default 9060 here instead of `command`
 #export CASSANDRA_RPC_PORT=9060
-export CASSANDRA_RPC_PORT="\`curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_RPC_PORT=[0-9.]* | grep -o [0-9.]*\`"
+export CASSANDRA_RPC_PORT="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_RPC_PORT=[0-9.]* | grep -o [0-9.]*"
 
 #can put default 9061 here instead of `command`
 #export CASSANDRA_TCP_PORT=9061
-export CASSANDRA_TCP_PORT="\`curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_TCP_PORT=[0-9.]* | grep -o [0-9.]*\`"
+export CASSANDRA_TCP_PORT="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_TCP_PORT=[0-9.]* | grep -o [0-9.]*"
 
 #can put default 9042 here instead of `command`
 #export CASSANDRA_NATIVE_CQL_PORT=9042
-export CASSANDRA_NATIVE_CQL_PORT=\`curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_NATIVE_CQL_PORT=[0-9.]* | grep -o [0-9.]*\`"
+export CASSANDRA_NATIVE_CQL_PORT="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_NATIVE_CQL_PORT=[0-9.]* | grep -o [0-9.]*"
 

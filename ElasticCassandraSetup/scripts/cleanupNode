@@ -1,0 +1,16 @@
+#!/bin/bash
+#script for cleaning up a Cassandra Node
+#removes cassandra data files only, not cassandra itself. After this, node can be snapshotted
+
+sudo -S rm -rf /var/lib/cassandra
+sudo -S mkdir /var/lib/cassandra
+sudo -S mkdir /var/lib/cassandra/data
+sudo -S mkdir /var/lib/cassandra/commitlog
+sudo -S mkdir /var/lib/cassandra/saved_caches
+
+#Give access rights tot he Cassandra dirs. Sincerely, maybe less rights might work
+sudo -S chmod 0777 /var/lib/cassandra
+sudo -S chmod 0777 /var/lib/cassandra/data
+sudo -S chmod 0777 /var/lib/cassandra/commitlog
+sudo -S chmod 0777 /var/lib/cassandra/saved_caches
+ 

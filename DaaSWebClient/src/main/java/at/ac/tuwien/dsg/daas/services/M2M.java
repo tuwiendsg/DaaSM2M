@@ -4,9 +4,8 @@
  */
 package at.ac.tuwien.dsg.daas.services;
 
-import at.ac.tuwien.dsg.daas.DataManagementAPI;
-import at.ac.tuwien.dsg.daas.DataManagementAPIFactory;
-import at.ac.tuwien.dsg.daas.config.CassandraAccessProperties;
+import at.ac.tuwien.dsg.daas.DaaSDelegate;
+import at.ac.tuwien.dsg.daas.DaaSDelegate.MonitoringData;
 import at.ac.tuwien.dsg.daas.entities.CreateRowsStatement;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.RowColumn;
@@ -27,12 +26,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -57,7 +50,7 @@ public class M2M {
 
     @Context
     private UriInfo context;
-    private static DataManagementAPI api;
+    private static DaaSDelegate api;
     private static final Charset charset = Charset.forName("UTF-8");
     private static final CharsetDecoder decoder = charset.newDecoder();
 
@@ -71,19 +64,15 @@ public class M2M {
 //            Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
 //        }
 //    }
-
     static {
-
-        api = DataManagementAPIFactory.createCassandraFactory(CassandraAccessProperties.getCassandraAccessIP(),
-        		CassandraAccessProperties.getCassandraAccessPort());
-
+        api = DaaSDelegate.getInstance();
     }
 
     /**
      * Creates a new instance of M2M
      */
     public M2M() {
- 
+
     }
 
     /**
@@ -98,19 +87,18 @@ public class M2M {
         api.createKeyspace(keyspace);
 
     }
-    
-    
+
     @GET
     @Path("/xml/keyspace")
     @Consumes("application/xml")
     public Collection<Keyspace> listKeyspaces() {
-    	Collection<Keyspace> keyspaces = new ArrayList<Keyspace>();
-        List<Row> rows =  api.listKeyspaces();
-    	for(Row row : rows){
-    		 Logger.getLogger(M2M.class.getName()).log(Level.ERROR, row.toString());
-    	}
-    	
-    	return keyspaces;
+        Collection<Keyspace> keyspaces = new ArrayList<Keyspace>();
+        List<Row> rows = api.listKeyspaces();
+        for (Row row : rows) {
+            Logger.getLogger(M2M.class.getName()).log(Level.ERROR, row.toString());
+        }
+
+        return keyspaces;
 
     }
 
@@ -123,11 +111,9 @@ public class M2M {
             Keyspace keyspace = mapper.readValue(keyspaceJSON, Keyspace.class);
             api.createKeyspace(keyspace);
 
-
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
         }
-
 
     }
 
@@ -482,8 +468,6 @@ public class M2M {
 //        } catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
-
-
     }
 
     /**
@@ -522,8 +506,6 @@ public class M2M {
 //            }
 //            session.close();
 //            connection.close();
-
-
         } catch (IOException ex) {
             Logger.getLogger(M2M.class
                     .getName()).log(Level.ERROR, null, ex);
@@ -579,4 +561,12 @@ public class M2M {
             ex.printStackTrace();
         }
     }
+
+    @GET
+    @Path("/monitoring")
+    @Produces("application/xml")
+    public MonitoringData getMonitoringInfo() {
+        return api.getMonitoringData();
+    }
+
 }

@@ -1,0 +1,17 @@
+modules {
+  module {
+    name = "getConnectionsNr"
+    language = "python"
+  }
+  
+}
+
+collection_group {
+  collect_every = 5
+  time_threshold = 5
+  metric {
+    name = "activeConnections"
+  }
+  
+}
+

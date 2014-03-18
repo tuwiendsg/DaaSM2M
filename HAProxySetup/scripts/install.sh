@@ -2,6 +2,16 @@
 
 CURRENT_DIR=$(pwd)
 
+#please uncomment if needed as appropriate for your distro. otherwise HAProxy 1.4 will be installed which does not work with our ganglia plug-in
+
+#for Ubuntu devel, lucid, precise, saucy
+#sudo -S add-apt-repository ppa:vbernat/haproxy-1.5
+
+#for Ubuntu  raring, quantal, precise, oneiric 
+#sudo -S add-apt-repository ppa:nilya/haproxy-1.5
+
+#sudo -S apt-get update
+
 sudo -S apt-get install haproxy
 
 #set HAProxy config path in 

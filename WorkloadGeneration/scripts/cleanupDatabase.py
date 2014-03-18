@@ -11,7 +11,7 @@ HAProxyIP = 'localhost'
 HAProxyport = '8080'
 BaseURL = HAProxyIP+':'+HAProxyport
 
-def executeRESTCall(restMethod, serviceBaseURL, resourceName, contentType, content):
+def executeRESTCall(restMethod, serviceBaseURL, resourceName, content, contentType):
 	connection =  httplib.HTTPConnection(serviceBaseURL)
         #read composition rules file
        
@@ -20,7 +20,7 @@ def executeRESTCall(restMethod, serviceBaseURL, resourceName, contentType, conte
                 #'Accept':'application/xml, multipart/related'
 	}
  
-	connection.request(restMethod, serviceBaseURL+'/'+resourceName, body=content,headers=headers,)
+	connection.request(restMethod, '/'+resourceName, body=content,headers=headers,)
 	result = connection.getresponse()
         print result.read()
 
@@ -31,7 +31,7 @@ def _reinitiateDB():
         #create keyspace    
         executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/keyspace','<Keyspace name="' + keyspaceName + '"/>','application/xml') 
         #create table    
-        executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="'+tablename+'" primaryKeyName="key" primaryKeyType="int"><Keyspace name="' + keyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>','application/xml') 
+        executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table', '<Table name="'+tablename+'" primaryKeyName="key" primaryKeyType="uuid"><Keyspace name="' + keyspaceName + '"/><Column name="sensorName" type="text"/><Column name="sensorValue" type="double"/></Table>','application/xml') 
      
 if __name__=='__main__':
     _reinitiateDB()

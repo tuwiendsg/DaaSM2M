@@ -2,5 +2,7 @@ untar
 tar -xzf ./HAProxySetup-1.0.tar.gz
 cd ./HAProxySetup-1.0
 
+in ./install.sh, if our ganglia plug-in is used, please uncomment if needed as appropriate for your distro. otherwise HAProxy 1.4 will be installed which does not work with our ganglia plug-in
+
 run install
 

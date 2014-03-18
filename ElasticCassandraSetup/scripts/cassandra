@@ -1,21 +1,52 @@
-#!/bin/sh
-#
-#Licensed under the EUPL V.1.1 
-#http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
-# 
-# description: Starts and stops Cassandra
-# update deamon path to point to the cassandra executable
+### BEGIN INIT INFO
+# Provides:          cassandra
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start a new daas-service
+# Description:       To start-stop daas-service
+### END INIT INFO
 
-HOME=
-CASSANDRA_BIN=
+
 CASSANDRA_HOME=
+CASSANDRA_CONFIG=$CASSANDRA_HOME/conf
+CASSANDRA_BIN=$CASSANDRA_HOME/bin
 JAVA_HOME=
-
 CLASSPATH=$CASSANDRA_HOME/lib
 DEAMON=$CASSANDRA_BIN/cassandra
+ 
+#get contextualization info
+. ./Config
+
 
 start() {
-        echo -n "Starting Cassandra... "
+         echo -n "Starting Cassandra... "
+        MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+        eval "sed -i.bak  's/127.0.0.1 $(eval hostname)//' /etc/hosts"
+        echo "127.0.0.1 $(eval hostname)" | sudo -S tee -a /etc/hosts
+        eval "sed -i.bak 's/listen_address:.*/listen_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
+        eval "sed -i.bak 's/- seeds:.*/- seeds: \"$MY_IP\"/' $CASSANDRA_CONFIG/cassandra.yaml"
+        eval "sed -i.bak 's/rpc_address:.*/rpc_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"
+	
+	RPC_PORT=$(eval $CASSANDRA_RPC_PORT)   
+        if [ ! $? -eq 0 ];then
+          RPC_PORT=$CASSANDRA_RPC_PORT
+        fi   		
+	eval "sed -i.bak 's/rpc_port:.*/rpc_port: $RPC_PORT/' $cassandraConfFile"
+
+        TCP_PORT=$(eval $CASSANDRA_TCP_PORT)   
+        if [ ! $? -eq 0 ];then
+          TCP_PORT=$CASSANDRA_TCP_PORT
+        fi   		
+        eval "sed -i.bak 's/storage_port:.*/storage_port: $TCP_PORT/' $CASSANDRA_CONFIG/cassandra.yaml"   
+       
+        NATIVE_PORT=$(eval $CASSANDRA_NATIVE_CQL_PORT)   
+        if [ ! $? -eq 0 ];then
+          NATIVE_PORT=$CASSANDRA_NATIVE_CQL_PORT
+        fi   
+        eval "sed -i.bak 's/native_transport_port:.*/native_transport_port: $NATIVE_PORT/' $CASSANDRA_CONFIG/cassandra.yaml"
+             
         $DEAMON -p /var/run/cassandra.pid
         echo "OK"
         return 0

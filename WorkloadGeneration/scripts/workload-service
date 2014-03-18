@@ -1,0 +1,65 @@
+### BEGIN INIT INFO
+# Provides:          workload-service
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start DaaSm workload
+# Description:       To start-stop workload
+### END INIT INFO
+
+RUN_MODE="daemons"
+
+PYTHON=`which python`
+DAEMONDIR=/home/ubuntu/WorkloadGeneration-1.0
+DAEMON=workloadGenerator.py
+PIDDIR=/tmp/
+PIDFILE=$PIDDIR/workload-service.pid
+
+. /lib/lsb/init-functions
+
+case "$1" in
+        start)
+                log_daemon_msg "Starting workload daemon"
+        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDFILE --make-pidfile --background --exec $PYTHON $DAEMON; then
+                    log_end_msg 1
+                    exit 1
+                fi
+                log_end_msg 0
+                ;;
+        stop)
+                log_daemon_msg "Stopping  workload daemon"
+
+                start-stop-daemon --stop --quiet --pidfile $PIDFILE
+                # Wait a little and remove stale PID file
+                sleep 1
+                if [ -f $PIDFILE ] && ! ps h `cat $PIDFILE` > /dev/null
+                then
+                        # remove it
+                        rm -f $PIDFILE
+                fi
+                log_end_msg 0
+                ;;
+        restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	status)
+		pidofproc -p $PIDFILE $JAVA >/dev/null
+		status=$?
+		if [ $status -eq 0 ]; then
+			log_success_msg "Workload service is running"
+		else
+			log_failure_msg "Workload service is not running"
+		fi
+		exit $status
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+		;;
+esac
+ 
+exit 0
+

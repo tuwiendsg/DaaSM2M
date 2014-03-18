@@ -1,3 +1,5 @@
+Updated information and instructions can be found on the GitHub Wiki at https://github.com/tuwiendsg/DaaSM2M/wiki
+
 All scripts configured for ubuntu, tested on Ubuntu 11 and 13
 
 1. Use ElasticCassandra to setup an elastic Cassandra cluster with scripts to add/remove cassandra nodes
