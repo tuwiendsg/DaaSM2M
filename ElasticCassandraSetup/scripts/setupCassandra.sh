@@ -50,6 +50,10 @@ sudo -S chmod 0777 /var/lib/cassandra/saved_caches
 #Set user HOME directory
 eval "sed -i 's#\<HOME=.*#HOME=$HOME#' $CURRENT_DIR/cassandra"
 
+#we got some errors on cassandra stack size so we are changing it
+eval "sed -i 's#\<Xss180k#Xss256k#' $CASSANDRA_CONFIG/cassandra-env.sh"
+ 
+
 #Set user CASSANDRA HOME directory
 eval "sed -i 's#\<CASSANDRA_BIN=.*#CASSANDRA_BIN=$CASSANDRA_BIN#' $CURRENT_DIR/cassandra"
 eval "sed -i 's#\<CASSANDRA_HOME=.*#CASSANDRA_HOME=$CASSANDRA_HOME#' $CURRENT_DIR/cassandra"
@@ -59,6 +63,8 @@ eval "sed -i 's#\<JAVA_HOME=.*#JAVA_HOME=$JAVA_HOME#' $CURRENT_DIR/cassandra"
 eval "sed -i 's#\<JAVA=.*#JAVA=$JAVA_HOME/bin/java#' $CASSANDRA_BIN/cassandra"
 eval "sed -i 's#\<JAVA=.*#JAVA=$JAVA_HOME/bin/java#' $CASSANDRA_BIN/cassandra-cli"
 eval "sed -i 's#\<JAVA=.*#JAVA=$JAVA_HOME/bin/java#' $CASSANDRA_BIN/nodetool"
+
+
 
  
 echo "Cassandra deployed successfully. Cassandra can be run with \"sudo service cassandra start\"."
