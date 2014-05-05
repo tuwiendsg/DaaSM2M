@@ -30,6 +30,7 @@ def executeRESTCall(restMethod, serviceBaseURL, resourceName,  content):
 
         connection.request(restMethod, '/'+resourceName, body=content,headers=headers,)
         result = connection.getresponse()
+        connection.close()
         #print result.status
         #print result.reason
         #print result.read()
@@ -60,7 +61,7 @@ def _issueWriteRequest():
             #print table
             #system.exit(1)
             #generatedKeys.append(key)
-            rowsToCreate = 7 #random.randrange(10,50)
+            rowsToCreate = 1 #random.randrange(10,50)
             #10% are create table
             #for i in range(0, int(rowsToCreate*0.1)):
             #  tableIndex = str(random.randrange(1, 11111111))
@@ -79,7 +80,7 @@ def _issueWriteRequest():
             executeRESTCall('PUT', BaseURL, 'DaaS/api/xml/table/row', createRowStatement)
 
 def _issueReadRequest():
-            rowsToDelete = 7 #random.randrange(10,50)
+            rowsToDelete = 1 #random.randrange(10,50)
             keysToDelete = generatedKeys.pop(random.randint(0,len(generatedKeys)-1));
             for i in range(0, int (rowsToDelete)):
                if len(generatedKeys) > 0:
@@ -102,8 +103,8 @@ if __name__=='__main__':
             opCount = minOperations #random.randint(minOperations,maxOperations);
             _writeManyInParralel(opCount)
             #_readManyInParralel(opCount)
-            minOperations = minOperations + 1
-            maxOperations = maxOperations + 1
+            minOperations = minOperations + 10
+            maxOperations = maxOperations + 10
             #time.sleep(1)
             #print "invoke " + min
         #burst
@@ -119,8 +120,8 @@ if __name__=='__main__':
         #cool off
         print "cool off"
         for i in range(0,500):
-            minOperations = minOperations - 1
-            maxOperations = maxOperations - 1
+            minOperations = minOperations - 10
+            maxOperations = maxOperations - 10
             opCount = minOperations # random.randint(minOperations,maxOperations)
             #_writeManyInParralel(opCount)
             _readManyInParralel(opCount)

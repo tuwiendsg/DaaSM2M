@@ -28,6 +28,7 @@ CASSANDRA_SEED_IP="curl http://169.254.169.254/latest/user-data | grep -o CASSAN
 eval "sed -i 's#\<CassandraNode\.IP =.*#CassandraNode\.IP =$CASSANDRA_SEED_IP#' $DAEMONDIR/config/cassandraAccess.properties"
 eval "sed -i 's#\<CassandraNode\.PORT =.*#CassandraNode\.PORT =$CASSANDRA_SEED_PORT#' $DAEMONDIR/config/cassandraAccess.properties"
 
+#ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 HAPROXY_REGISTER_COMMAND=registerToHAProxy
 HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
