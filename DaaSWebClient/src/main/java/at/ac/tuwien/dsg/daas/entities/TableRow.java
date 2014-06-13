@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * Author: Daniel Moldovan Institution: Vienna University of Technology
+ * Used for queries: Has value, but Column type has type and name, not name and value
  */
 @XmlRootElement(name = "Row")
 @XmlAccessorType(XmlAccessType.FIELD)

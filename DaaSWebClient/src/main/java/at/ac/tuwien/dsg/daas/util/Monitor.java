@@ -99,8 +99,11 @@ public class Monitor {
 //            responseTime.set(newResponseTime);
 //            troughput.set(1);
 //        } else {
+        //if response time > 1 second (1000 millis), then 
+        Integer throughoutPerSeconds = (newResponseTime.intValue() > 1000) ? 1000 / newResponseTime.intValue() : 1;
         responseTime.addAndGet(newResponseTime);
-        troughput.incrementAndGet();
+
+        troughput.addAndGet(throughoutPerSeconds);
 //        }
     }
 
