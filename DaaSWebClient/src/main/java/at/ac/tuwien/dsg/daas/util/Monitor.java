@@ -118,8 +118,7 @@ public class Monitor {
 
     private synchronized void recordMonitoring() {
         long avgTpt = troughput.get();
-        troughput.set(0);
-        responseTime.set(0);
+
         outstandingRequestsNumber.set(outstandingRequests.size());
 
         if (avgTpt > 0 || !outstandingRequests.isEmpty()) {
@@ -143,6 +142,8 @@ public class Monitor {
 //            troughput.set(0);
 //            responseTime.set(0);
         }
+        troughput.set(0);
+        responseTime.set(0);
     }
 
 }
