@@ -18,10 +18,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Keyspace {
 
-    
-    @XmlAttribute(name="name",required = true)
+    @XmlAttribute(name = "name", required = true)
     private String name;
-    
+
     public Keyspace() {
     }
 
@@ -29,8 +28,6 @@ public class Keyspace {
         this.name = name;
     }
 
-    
-    
     public String getName() {
         return name;
     }
@@ -38,8 +35,10 @@ public class Keyspace {
     public void setName(String name) {
         this.name = name;
     }
-    
-    
-     
-    
+
+    public Keyspace withName(final String name) {
+        this.name = name;
+        return this;
+    }
+
 }

@@ -19,25 +19,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Table")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Table {
- 
-    @XmlAttribute(name="name",required = true)
+
+    @XmlAttribute(name = "name", required = true)
     private String name;
-    
-    @XmlElement(name="Keyspace",required = true)
+
+    @XmlElement(name = "Keyspace", required = true)
     private Keyspace keyspace;
-   
-    @XmlAttribute(name="primaryKeyName",required = true)
+
+    @XmlAttribute(name = "primaryKeyName", required = true)
     private String primaryKeyName;
-   
-    @XmlAttribute(name="primaryKeyType",required = true)
+
+    @XmlAttribute(name = "primaryKeyType", required = true)
     private String primaryKeyType;
-   
-  
+
     @XmlElement(name = "Column", required = true)
     private Collection<Column> columns;
 
-    
-    
     {
         columns = new ArrayList<Column>();
     }
@@ -45,16 +42,12 @@ public class Table {
     public Table() {
     }
 
-    
-    
-    public Table(Keyspace keyspace, String name,  String primaryKeyName, String primaryKeyType) {
+    public Table(Keyspace keyspace, String name, String primaryKeyName, String primaryKeyType) {
         this.name = name;
         this.keyspace = keyspace;
         this.primaryKeyName = primaryKeyName;
         this.primaryKeyType = primaryKeyType;
     }
-    
-    
 
     public String getName() {
         return name;
@@ -95,17 +88,38 @@ public class Table {
     public void setColumns(Collection<Column> columns) {
         this.columns = columns;
     }
-    
-    public void addColumn(Column column){
+
+    public void addColumn(Column column) {
         this.columns.add(column);
     }
-    
-    
-    public void removeColumn(Column column){
+
+    public void removeColumn(Column column) {
         this.columns.remove(column);
     }
-    
-    
-    
+
+    public Table withName(final String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Table withKeyspace(final Keyspace keyspace) {
+        this.keyspace = keyspace;
+        return this;
+    }
+
+    public Table withPrimaryKeyName(final String primaryKeyName) {
+        this.primaryKeyName = primaryKeyName;
+        return this;
+    }
+
+    public Table withPrimaryKeyType(final String primaryKeyType) {
+        this.primaryKeyType = primaryKeyType;
+        return this;
+    }
+
+    public Table withColumns(final Collection<Column> columns) {
+        this.columns = columns;
+        return this;
+    }
 
 }

@@ -34,9 +34,9 @@ HAPROXY_REGISTER_COMMAND=registerToHAProxy
 HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
 #can also be called remotely through SSH 
-#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
+#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
 
 
 #HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy

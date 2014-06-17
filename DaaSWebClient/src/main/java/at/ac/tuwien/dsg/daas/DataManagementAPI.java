@@ -8,19 +8,11 @@ package at.ac.tuwien.dsg.daas;
 
 import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
-import at.ac.tuwien.dsg.daas.entities.RowColumn;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ExecutionInfo;
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.Metadata;
-import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
