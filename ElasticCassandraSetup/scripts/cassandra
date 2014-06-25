@@ -19,10 +19,10 @@ DEAMON=$CASSANDRA_BIN/cassandra
 #get contextualization info
 . ./Config
 
-
+MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
 start() {
          echo -n "Starting Cassandra... "
-        MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+       
         eval "sed -i.bak  's/127.0.0.1 $(eval hostname)//' /etc/hosts"
         echo "127.0.0.1 $(eval hostname)" | sudo -S tee -a /etc/hosts
         eval "sed -i.bak 's/listen_address:.*/listen_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"

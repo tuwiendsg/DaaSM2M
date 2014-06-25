@@ -23,10 +23,11 @@ cassandraConfFile=$CASSANDRA_CONFIG/cassandra.yaml
  
 . /lib/lsb/init-functions
 
+MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
+
 case "$1" in
 	start)
                 #configure cassandra.yaml
-		MY_IP=$(eval ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*)
                 eval "sed -i.bak  's/127.0.0.1 $(eval hostname)//' /etc/hosts"
                 echo "127.0.0.1 $(eval hostname)" | sudo -S tee -a /etc/hosts
 		eval "sed -i.bak 's/rpc_address:.*/rpc_address: $MY_IP/' $CASSANDRA_CONFIG/cassandra.yaml"

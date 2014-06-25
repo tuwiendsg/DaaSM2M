@@ -41,7 +41,9 @@ HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
 #HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy
 
-test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed" exit 0
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "error test -x $JAVA -a -f $DAEMONDIR/$DAEMON"
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
+
 #test -x $DAEMONDIR/$DAEMON || exit 0
 
 . /lib/lsb/init-functions
