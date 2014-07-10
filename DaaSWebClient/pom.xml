@@ -112,6 +112,12 @@
             </exclusions>
 
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
  
@@ -126,6 +132,16 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+            
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <path>/DaaS</path>
+                </configuration>
+            </plugin>-->
+
 
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
@@ -139,6 +155,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <serverXml>./config/server.xml</serverXml>
                             <path>/DaaS</path>
                             <finalName>DaaS.war.jar</finalName>
                         </configuration>
@@ -167,28 +184,29 @@
                     </execution>
                 </executions>
             </plugin>
-
+            
+           
           
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.4</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/bundle.xml</descriptor>
-                            </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/bundle.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
 

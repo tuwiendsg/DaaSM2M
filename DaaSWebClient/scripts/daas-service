@@ -28,19 +28,22 @@ CASSANDRA_SEED_IP="curl http://169.254.169.254/latest/user-data | grep -o CASSAN
 eval "sed -i 's#\<CassandraNode\.IP =.*#CassandraNode\.IP =$CASSANDRA_SEED_IP#' $DAEMONDIR/config/cassandraAccess.properties"
 eval "sed -i 's#\<CassandraNode\.PORT =.*#CassandraNode\.PORT =$CASSANDRA_SEED_PORT#' $DAEMONDIR/config/cassandraAccess.properties"
 
+#ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 HAPROXY_REGISTER_COMMAND=registerToHAProxy
 HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
 
 #can also be called remotely through SSH 
-#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND="ssh -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
+#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
+#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
 
 
 #HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy
 
-test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed" exit 0
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "error test -x $JAVA -a -f $DAEMONDIR/$DAEMON"
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
+
 #test -x $DAEMONDIR/$DAEMON || exit 0
 
 . /lib/lsb/init-functions

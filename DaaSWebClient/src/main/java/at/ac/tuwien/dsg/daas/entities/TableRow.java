@@ -13,15 +13,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * Author: Daniel Moldovan Institution: Vienna University of Technology
+ * Author: Daniel Moldovan Institution: Vienna University of Technology Used for
+ * queries: Has value, but Column type has type and name, not name and value
  */
 @XmlRootElement(name = "Row")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TableRow {
 
-    @XmlElement(name="Column",required = true)
+    @XmlElement(name = "Column", required = true)
     private Collection<RowColumn> values;
-    
+
     {
         values = new ArrayList<RowColumn>();
     }
@@ -33,12 +34,12 @@ public class TableRow {
     public void setValues(Collection<RowColumn> values) {
         this.values = values;
     }
-    
-    public void addRowColumn(RowColumn column){
+
+    public void addRowColumn(RowColumn column) {
         this.values.add(column);
     }
-    
-    public void removeRowColumn(RowColumn column){
+
+    public void removeRowColumn(RowColumn column) {
         this.values.remove(column);
     }
 
@@ -46,7 +47,10 @@ public class TableRow {
     public String toString() {
         return "TableRow{" + "values=" + values + '}';
     }
-    
-    
-    
+
+    public TableRow withValues(final Collection<RowColumn> values) {
+        this.values = values;
+        return this;
+    }
+
 }

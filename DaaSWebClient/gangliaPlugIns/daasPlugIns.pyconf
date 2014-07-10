@@ -7,6 +7,11 @@ modules {
     name = "getThroughput"
     language = "python"
   }
+
+   module {
+    name = "getPendingRequests"
+    language = "python"
+  } 
   
 }
 
@@ -19,6 +24,10 @@ collection_group {
 
   metric {
     name = "throughput"
+  }
+
+   metric {
+    name = "pendingRequests"
   }
   
 }

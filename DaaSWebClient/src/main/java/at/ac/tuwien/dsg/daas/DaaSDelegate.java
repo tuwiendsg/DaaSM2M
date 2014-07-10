@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -39,6 +40,8 @@ public class DaaSDelegate implements DataManagementAPI {
 
     private DataManagementAPI dataManagementAPI;
     private Monitor monitor;
+
+    private static AtomicInteger requestCount = new AtomicInteger(0);
 
     static {
 
@@ -80,187 +83,190 @@ public class DaaSDelegate implements DataManagementAPI {
         return instance;
     }
 
+    private static synchronized Integer newRequestID() {
+        return requestCount.incrementAndGet();
+    }
+
     private DaaSDelegate() {
         dataManagementAPI = DataManagementAPIFactory.createCassandraFactory(CassandraAccessProperties.getCassandraAccessIP(),
                 CassandraAccessProperties.getCassandraAccessPort());
     }
 
-    public  void openConnection() {
+    public void openConnection() {
         dataManagementAPI.openConnection();
     }
 
-    public  void closeConnection() {
+    public void closeConnection() {
         dataManagementAPI.openConnection();
     }
 
-    public  void createKeyspace(Keyspace keyspace) {
+    public void createKeyspace(Keyspace keyspace) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
-
             dataManagementAPI.createKeyspace(keyspace);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
     }
 
-    public  List<Row> listKeyspaces() {
+    public List<Row> listKeyspaces() {
+        List<Row> res;
+
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-
-            monitor.markOutstandingRequest();
-
-            List<Row> res = dataManagementAPI.listKeyspaces();
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
-            return res;
+            res = dataManagementAPI.listKeyspaces();
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
+        return res;
+
     }
 
-    public  void dropKeyspace(Keyspace keyspace) {
+    public void dropKeyspace(Keyspace keyspace) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-
-            monitor.markOutstandingRequest();
-
             dataManagementAPI.dropKeyspace(keyspace);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  void createTable(Table table) {
+    public void createTable(Table table) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-
-            monitor.markOutstandingRequest();
-
             dataManagementAPI.createTable(table);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
-        dataManagementAPI.createIndex(keyspaceName, tableName, columns);
-    }
+    public void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
 
-    public  void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
-        dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
-    }
-
-    public  void dropTable(Table table) {
         try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
+            dataManagementAPI.createIndex(keyspaceName, tableName, columns);
+        } finally {
+            monitor.removeOutstandingRequest(reqID, new Date());
+        }
+
+    }
+
+    public void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
+        try {
+            dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
+        } finally {
+            monitor.removeOutstandingRequest(reqID, new Date());
+        }
+
+    }
+
+    public void dropTable(Table table) {
+
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
+        try {
             dataManagementAPI.dropTable(table);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+    public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+        Row r;
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
-
-            Row r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
-
-            return r;
+            r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
+        return r;
+
     }
 
-    public  List<Row> selectXRowsFromTable(TableQuery querry) {
+    public List<Row> selectXRowsFromTable(TableQuery querry) {
+        List<Row> res;
+
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
-
-            List<Row> r = dataManagementAPI.selectXRowsFromTable(querry);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
-
-            return r;
+            res = dataManagementAPI.selectXRowsFromTable(querry);
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
+        return res;
+
     }
 
-    public  void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
-        
-        try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
+    public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
 
+        try {
             dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
-        try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
+    public void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
 
+        try {
             dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  void deleteRowsFromTable(TableQuery query) {
+    public void deleteRowsFromTable(TableQuery query) {
+
+        Integer reqID = DaaSDelegate.newRequestID();
+        monitor.addOutstandingRequest(reqID, new Date());
+
         try {
-            Date before = new Date();
-            monitor.markOutstandingRequest();
-
             dataManagementAPI.deleteRowsFromTable(query);
-            Date after = new Date();
-
-            monitor.monitorRT(after.getTime() - before.getTime());
         } finally {
-            monitor.removeOutstandingRequest();
+            monitor.removeOutstandingRequest(reqID, new Date());
         }
+
     }
 
-    public  String getCassandraHostIP() {
+    public String getCassandraHostIP() {
         return dataManagementAPI.getCassandraHostIP();
     }
 
-    public  int getCasandraPort() {
+    public int getCasandraPort() {
         return dataManagementAPI.getCasandraPort();
     }
 
-    public  MonitoringData getMonitoringData() {
-        long[] l = monitor.getMonitoringData();
-        return new MonitoringData(l[0], l[1]);
-
+    public MonitoringData getMonitoringData() {
+        Number[] l = monitor.getMonitoringData();
+        return new MonitoringData(l[0].longValue(), l[1].longValue(), l[2].intValue());
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -273,12 +279,16 @@ public class DaaSDelegate implements DataManagementAPI {
         @XmlElement(name = "throughput", required = true)
         private Long averageTroughput;
 
+        @XmlElement(name = "pendingRequests", required = true)
+        private Integer pendingRequests;
+
         public MonitoringData() {
         }
 
-        public MonitoringData(Long averageResponseTime, Long averageTroughput) {
+        public MonitoringData(Long averageResponseTime, Long averageTroughput, Integer pendingRequests) {
             this.averageResponseTime = averageResponseTime;
             this.averageTroughput = averageTroughput;
+            this.pendingRequests = pendingRequests;
         }
 
         public Long getAverageResponseTime() {
@@ -295,6 +305,14 @@ public class DaaSDelegate implements DataManagementAPI {
 
         public void setAverageTroughput(Long averageTroughput) {
             this.averageTroughput = averageTroughput;
+        }
+
+        public Integer getPendingRequests() {
+            return pendingRequests;
+        }
+
+        public void setPendingRequests(Integer pendingRequests) {
+            this.pendingRequests = pendingRequests;
         }
 
     }
