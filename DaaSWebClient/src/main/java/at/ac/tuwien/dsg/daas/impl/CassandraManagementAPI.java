@@ -73,7 +73,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
         session = null;
     }
 
-    public synchronized void createKeyspace(Keyspace keyspace) {
+    public void createKeyspace(Keyspace keyspace) {
         String createKeyspaceStatement = "CREATE KEYSPACE " + keyspace.getName() + " WITH replication "
                 + "= {'class':'SimpleStrategy', 'replication_factor':3};";
 
@@ -81,7 +81,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
         ExecutionInfo info = resultSet.getExecutionInfo();
     }
 
-    public synchronized void dropKeyspace(Keyspace keyspace) {
+    public void dropKeyspace(Keyspace keyspace) {
         String createKeyspaceStatement = "DROP KEYSPACE " + keyspace.getName() + ";";
         ResultSet resultSet = session.execute(createKeyspaceStatement);
         ExecutionInfo info = resultSet.getExecutionInfo();
@@ -120,7 +120,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
     // uuid | java.util.UUID
     // varchar | java.lang.String
     // varint | java.math.BigInteger
-    public synchronized void createTable(Table table) {
+    public void createTable(Table table) {
 
         Map<String, String> columnsMap = new HashMap<String, String>();
         for (Column column : table.getColumns()) {
@@ -151,7 +151,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * @param tableName
      * @param columns creates an index on ALLL supplied columns
      */
-    public synchronized void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+    public void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
         for (Column column : columns) {
             // build create table statement
             String createIndexStatement = "CREATE INDEX " + column.getName() + "Index ON " + keyspaceName + "." + tableName + " ( " + column.getName() + ");";
@@ -167,7 +167,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * @param tableName
      * @param columns deletes indexes from ALLL supplied columns
      */
-    public synchronized void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
+    public void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
         for (Column column : columns) {
             // build create table statement
             String useKeyspaceStatement = "use " + keyspaceName + ";";
@@ -179,7 +179,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
         }
     }
 
-    public synchronized void dropTable(Table table) {
+    public void dropTable(Table table) {
 
         // build create table statement
         String dropTableStatement = "DROP TABLE " + table.getKeyspace().getName() + "." + table.getName() + ";";
@@ -206,7 +206,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * previousely" to get the next event in line, and so on until it returns
      * nothing.
      */
-    public synchronized Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+    public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
         String selectCommand = "SELECT * FROM " + keyspaceName + "." + tableName;
         if (condition != null && condition.length() > 0) {
             selectCommand += " WHERE " + condition;
@@ -248,7 +248,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * QueryBuilder.select().all().from(tableName).where()...
      *
      */
-    public synchronized List<Row> selectXRowsFromTable(TableQuery querry) {
+    public List<Row> selectXRowsFromTable(TableQuery querry) {
         Table table = querry.getTable();
         String condition = querry.getCondition();
         int maxRows = querry.getMaxResultCount();
@@ -275,7 +275,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * @param tableName
      * @param rows each row is a map of String,DataType containing
      */
-    public synchronized void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
+    public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
 
         // build create table statement
         for (TableRow row : rows) {
@@ -303,7 +303,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * @param rows each row is a map of String,Value containing columnName=value
      * pairs
      */
-    public synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
+    public void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
 
         // build create table statement
         String updateStatement = "UPDATE " + keyspaceName + "." + tableName + " USING CONSISTENCY QUORUM SET";
@@ -324,7 +324,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
 
     public List<Row> listKeyspaces() {
 
-        String selectCommand = "DESCRIBE KEYSPACES;";
+        String selectCommand = "DESCRIBE keyspaces;";
         ResultSet resultSet = session.execute(selectCommand);
         ExecutionInfo info = resultSet.getExecutionInfo();
 
@@ -343,7 +343,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * name='bob' AND score >= 40 userID = 'some_key_value' userID IN (key1,
      * key2)
      */
-    public synchronized void deleteRowsFromTable(TableQuery query) {
+    public void deleteRowsFromTable(TableQuery query) {
         String condition = query.getCondition();
         Table table = query.getTable();
 

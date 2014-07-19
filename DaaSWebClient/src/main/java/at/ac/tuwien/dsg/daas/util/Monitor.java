@@ -70,18 +70,18 @@ public class Monitor {
 
     }
 
-    public synchronized void addOutstandingRequest(Integer requestID, Date requestTime) {
+    public void addOutstandingRequest(Integer requestID, Date requestTime) {
         outstandingRequests.put(requestID, requestTime);
     }
 
-    public synchronized void removeOutstandingRequest(Integer requestID, Date requestTime) {
+    public void removeOutstandingRequest(Integer requestID, Date requestTime) {
         monitorRT(requestID, requestTime);
     }
 
     /**
      * @param newResponseTime in milliseconds
      */
-    private synchronized void monitorRT(Integer requestID, Date endTime) {
+    private void monitorRT(Integer requestID, Date endTime) {
 
         //remove request from outstanding
         Date requestTime = outstandingRequests.remove(requestID);
@@ -107,7 +107,7 @@ public class Monitor {
      * monitoringIntervalInMilliseconds long [1] - troughput in
      * monitoringIntervalInMilliseconds
      */
-    public synchronized Number[] getMonitoringData() {
+    public Number[] getMonitoringData() {
         return new Number[]{averageResponseTime.get(), averageTroughput.get(), outstandingRequestsNumber};
     }
 
