@@ -62,9 +62,7 @@ public class Monitor {
 
             @Override
             public void run() {
-                while (true) {
-                    selfReference.recordMonitoring();
-                }
+                selfReference.recordMonitoring();
             }
         };
 
