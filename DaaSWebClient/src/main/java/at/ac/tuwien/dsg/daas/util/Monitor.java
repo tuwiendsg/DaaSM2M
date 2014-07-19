@@ -12,6 +12,8 @@ package at.ac.tuwien.dsg.daas.util;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -52,26 +54,21 @@ public class Monitor {
     }
 
     public Monitor(int monitoringIntervalInMilliseconds) {
-
-        this.monitoringIntervalInMilliseconds = monitoringIntervalInMilliseconds;
         selfReference = this;
-        Thread monitoringThread = new Thread() {
+        this.monitoringIntervalInMilliseconds = monitoringIntervalInMilliseconds;
+
+        Timer monitoringTimer = new Timer();
+        TimerTask task = new TimerTask() {
 
             @Override
             public void run() {
                 while (true) {
-                    try {
-                        Thread.sleep(selfReference.monitoringIntervalInMilliseconds);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-
                     selfReference.recordMonitoring();
                 }
             }
         };
 
-        monitoringThread.start();
+        monitoringTimer.schedule(task, 0, monitoringIntervalInMilliseconds);
 
     }
 
