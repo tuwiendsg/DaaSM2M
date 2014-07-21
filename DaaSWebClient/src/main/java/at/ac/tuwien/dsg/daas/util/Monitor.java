@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Monitor {
 
-    private int monitoringIntervalInMilliseconds;
+    private int monitoringIntervalInMilliseconds = 1000;
 
     private AtomicLong responseTime;
     private AtomicLong troughput;
@@ -38,11 +38,11 @@ public class Monitor {
     //this means, if we have a long query taking 5 seconds, we would get as respinse time monitoring data 1,2,3,4,5, not 0,0,0,0,5 
     private Map<Integer, Date> outstandingRequests;
 
-    private Monitor selfReference;
+    private static Monitor instance;
     //used to reset monitoring counter
     //an issue is that if I reset it automatically at 1 second, if there are long running querries,
     //the response time will be 0 for a long time, and then will be very large, and then small again
-    boolean monitoringDataRead = false;
+    private static boolean monitoringDataRead = false;
 
     {
         averageResponseTime = new AtomicLong(0);
@@ -53,21 +53,30 @@ public class Monitor {
         outstandingRequests = new HashMap<Integer, Date>();
     }
 
-    public Monitor(int monitoringIntervalInMilliseconds) {
-        selfReference = this;
-        this.monitoringIntervalInMilliseconds = monitoringIntervalInMilliseconds;
+    static {
 
         Timer monitoringTimer = new Timer();
+        final Monitor monitor = new Monitor();
         TimerTask task = new TimerTask() {
 
             @Override
             public void run() {
-                selfReference.recordMonitoring();
+                monitor.recordMonitoring();
             }
         };
 
-        monitoringTimer.schedule(task, 0, monitoringIntervalInMilliseconds);
+        monitoringTimer.schedule(task, 0, monitor.monitoringIntervalInMilliseconds);
 
+        instance = monitor;
+
+    }
+
+    private Monitor() {
+
+    }
+
+    public static Monitor getInstance() {
+        return instance;
     }
 
     public void addOutstandingRequest(Integer requestID, Date requestTime) {

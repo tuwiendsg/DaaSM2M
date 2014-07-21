@@ -39,7 +39,7 @@ public class DaaSDelegate implements DataManagementAPI {
     private static DaaSDelegate instance;
 
     private DataManagementAPI dataManagementAPI;
-    private Monitor monitor;
+    private static Monitor monitor;
 
     private static AtomicInteger requestCount = new AtomicInteger(0);
 
@@ -75,15 +75,15 @@ public class DaaSDelegate implements DataManagementAPI {
         }
     }
 
-    {
-        monitor = new Monitor(1000);
+    static {
+        monitor = Monitor.getInstance();
     }
 
     public static DaaSDelegate getInstance() {
         return instance;
     }
 
-    private static synchronized Integer newRequestID() {
+    private static Integer newRequestID() {
         return requestCount.incrementAndGet();
     }
 
