@@ -14,8 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Created with IntelliJ IDEA. User: daniel-tuwien Date: 4/29/13 Time: 2:07 PM
@@ -50,7 +53,7 @@ public class Monitor {
         responseTime = new AtomicLong(0);
         troughput = new AtomicLong(0);
         outstandingRequestsNumber = new AtomicInteger(0);
-        outstandingRequests = new HashMap<Integer, Date>();
+        outstandingRequests = new ConcurrentHashMap<Integer, Date>();
     }
 
     static {
@@ -96,6 +99,10 @@ public class Monitor {
         Date requestTime = outstandingRequests.remove(requestID);
         Long newResponseTime = endTime.getTime() - requestTime.getTime();
 
+        if (newResponseTime < 0) {
+            Logger.getLogger(Monitor.class.getName()).log(Level.ERROR, "Response time " + newResponseTime + " between now = " + endTime.toString() + " and starting " + requestTime.toString());
+        }
+
 //if monitoring data read, when we have new data, reset the monitoring items
 //        if (monitoringDataRead) {
 //            monitoringDataRead = false;
@@ -131,6 +138,9 @@ public class Monitor {
             Date now = new Date();
             for (Date startedRequestTime : outstandingRequests.values()) {
                 avgRTForEndedRequests += now.getTime() - startedRequestTime.getTime();
+                if (now.getTime() - startedRequestTime.getTime() < 0) {
+                    Logger.getLogger(Monitor.class.getName()).log(Level.ERROR, "Response time " + (now.getTime() - startedRequestTime.getTime()) + " between now = " + now.toString() + " and starting " + startedRequestTime.toString());
+                }
             }
 
             //divide by executed requests (troughput) and nr of ongoing requests
