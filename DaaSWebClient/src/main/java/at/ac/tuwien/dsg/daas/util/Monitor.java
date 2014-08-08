@@ -30,7 +30,6 @@ public class Monitor {
 
     private AtomicLong responseTime;
     private AtomicLong troughput;
-
     private AtomicLong averageResponseTime;
     private AtomicLong averageTroughput;
 
@@ -41,7 +40,6 @@ public class Monitor {
     //this means, if we have a long query taking 5 seconds, we would get as respinse time monitoring data 1,2,3,4,5, not 0,0,0,0,5 
     private Map<Integer, Date> outstandingRequests;
 
-    private static Monitor instance;
     //used to reset monitoring counter
     //an issue is that if I reset it automatically at 1 second, if there are long running querries,
     //the response time will be 0 for a long time, and then will be very large, and then small again
@@ -56,10 +54,11 @@ public class Monitor {
         outstandingRequests = new ConcurrentHashMap<Integer, Date>();
     }
 
-    static {
 
-        Timer monitoringTimer = new Timer();
-        final Monitor monitor = new Monitor();
+    public Monitor(String tenant) {
+
+   Timer monitoringTimer = new Timer();
+        final Monitor monitor = this;
         TimerTask task = new TimerTask() {
 
             @Override
@@ -68,19 +67,10 @@ public class Monitor {
             }
         };
 
-        monitoringTimer.schedule(task, 0, monitor.monitoringIntervalInMilliseconds);
-
-        instance = monitor;
+        monitoringTimer.schedule(task, 0, this.monitoringIntervalInMilliseconds);
 
     }
 
-    private Monitor() {
-
-    }
-
-    public static Monitor getInstance() {
-        return instance;
-    }
 
     public void addOutstandingRequest(Integer requestID, Date requestTime) {
         outstandingRequests.put(requestID, requestTime);

@@ -50,6 +50,5 @@ public interface DataManagementAPI {
     public void deleteRowsFromTable(TableQuery query);
 
     public String getCassandraHostIP();
-
     public int getCasandraPort();
 }

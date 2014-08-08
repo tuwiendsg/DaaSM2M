@@ -17,8 +17,10 @@ import com.datastax.driver.core.Row;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,10 +38,9 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class DaaSDelegate implements DataManagementAPI {
 
-    private static DaaSDelegate instance;
-
+    private  String tenant;
     private DataManagementAPI dataManagementAPI;
-    private static Monitor monitor;
+    private Monitor monitor;
 
     private static AtomicInteger requestCount = new AtomicInteger(0);
 
@@ -65,31 +66,24 @@ public class DaaSDelegate implements DataManagementAPI {
             Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
         }
 
+    
     }
-
-    static {
-        try {
-            instance = new DaaSDelegate();
-        } catch (Exception e) {
-            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-        }
-    }
-
-    static {
-        monitor = Monitor.getInstance();
-    }
-
-    public static DaaSDelegate getInstance() {
-        return instance;
-    }
+    
+ 
 
     private static Integer newRequestID() {
         return requestCount.incrementAndGet();
     }
 
-    private DaaSDelegate() {
+    public DaaSDelegate() {
+        
         dataManagementAPI = DataManagementAPIFactory.createCassandraFactory(CassandraAccessProperties.getCassandraAccessIP(),
                 CassandraAccessProperties.getCassandraAccessPort());
+
+    }
+    public DaaSDelegate(String host, String port){
+        dataManagementAPI = DataManagementAPIFactory.createCassandraFactory(host, port);
+        
     }
 
     public void openConnection() {
@@ -267,6 +261,20 @@ public class DaaSDelegate implements DataManagementAPI {
     public MonitoringData getMonitoringData() {
         Number[] l = monitor.getMonitoringData();
         return new MonitoringData(l[0].longValue(), l[1].longValue(), l[2].intValue());
+    }
+
+    /**
+     * @return the tenant
+     */
+    public String getTenant() {
+        return tenant;
+    }
+
+    /**
+     * @param tenant the tenant to set
+     */
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

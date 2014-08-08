@@ -4,8 +4,10 @@
  */
 package at.ac.tuwien.dsg.daas.services;
 
-import at.ac.tuwien.dsg.daas.DaaSDelegate;
 import at.ac.tuwien.dsg.daas.DaaSDelegate.MonitoringData;
+
+import at.ac.tuwien.dsg.daas.MultiDaaSManagement;
+import at.ac.tuwien.dsg.daas.TenantDataManagementAPI;
 import at.ac.tuwien.dsg.daas.entities.CreateRowsStatement;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.RowColumn;
@@ -33,6 +35,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 
@@ -50,7 +53,7 @@ public class M2M {
 
     @Context
     private UriInfo context;
-    private static DaaSDelegate api;
+    private static TenantDataManagementAPI api;
     private static final Charset charset = Charset.forName("UTF-8");
     private static final CharsetDecoder decoder = charset.newDecoder();
 
@@ -65,7 +68,7 @@ public class M2M {
 //        }
 //    }
     static {
-        api = DaaSDelegate.getInstance();
+        api = MultiDaaSManagement.getInstance();
     }
 
     /**
@@ -81,19 +84,19 @@ public class M2M {
      * @param keyspace <Keyspace name="keyspaceName"/>
      */
     @PUT
-    @Path("/xml/keyspace")
+    @Path("/{id}/xml/keyspace")
     @Consumes("application/xml")
-    public void putKeyspace(Keyspace keyspace) {
-        api.createKeyspace(keyspace);
+    public void putKeyspace(Keyspace keyspace,@PathParam("id")String id) {
+        api.createKeyspace(id,keyspace);
 
     }
 
     @GET
-    @Path("/xml/keyspace")
+    @Path("/{id}/xml/keyspace")
     @Consumes("application/xml")
-    public Collection<Keyspace> listKeyspaces() {
+    public Collection<Keyspace> listKeyspaces(@PathParam("id")String id) {
         Collection<Keyspace> keyspaces = new ArrayList<Keyspace>();
-        List<Row> rows = api.listKeyspaces();
+        List<Row> rows = api.listKeyspaces(id);
         for (Row row : rows) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, row.toString());
         }
@@ -103,13 +106,13 @@ public class M2M {
     }
 
     @PUT
-    @Path("/json/keyspace")
+    @Path("/{id}/json/keyspace")
     @Consumes("application/json")
-    public void putKeyspaceJSON(String keyspaceJSON) {
+    public void putKeyspaceJSON(String keyspaceJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Keyspace keyspace = mapper.readValue(keyspaceJSON, Keyspace.class);
-            api.createKeyspace(keyspace);
+            api.createKeyspace(id, keyspace);
 
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
@@ -123,20 +126,20 @@ public class M2M {
      * @param keyspace <Keyspace name="keyspaceName"/>
      */
     @DELETE
-    @Path("/xml/keyspace")
+    @Path("/{id}/xml/keyspace")
     @Consumes("application/xml")
-    public void dropKeyspace(Keyspace keyspace) {
-        api.dropKeyspace(keyspace);
+    public void dropKeyspace(Keyspace keyspace,@PathParam("id")String id) {
+        api.dropKeyspace(id,keyspace);
     }
 
     @DELETE
-    @Path("/json/keyspace")
+    @Path("/{id}/json/keyspace")
     @Consumes("application/json")
-    public void dropKeyspaceJSON(String keyspaceJSON) {
+    public void dropKeyspaceJSON(String keyspaceJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Keyspace keyspace = mapper.readValue(keyspaceJSON, Keyspace.class);
-            api.dropKeyspace(keyspace);
+            api.dropKeyspace(id,keyspace);
 
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
@@ -148,10 +151,10 @@ public class M2M {
      * @param table
      */
     @PUT
-    @Path("/xml/table")
+    @Path("/{id}/xml/table")
     @Consumes("application/xml")
-    public void putTable(Table table) {
-        api.createTable(table);
+    public void putTable(Table table,@PathParam("id")String id) {
+        api.createTable(id,table);
     }
 
     /**
@@ -160,10 +163,10 @@ public class M2M {
      * @param table
      */
     @DELETE
-    @Path("/xml/table")
+    @Path("/{id}/xml/table")
     @Consumes("application/xml")
-    public void dropTable(Table table) {
-        api.dropTable(table);
+    public void dropTable(Table table,@PathParam("id")String id) {
+        api.dropTable(id,table);
     }
 
     /**
@@ -171,13 +174,13 @@ public class M2M {
      * @param table
      */
     @PUT
-    @Path("/json/table")
+    @Path("/{id}/json/table")
     @Consumes("application/json")
-    public void putTableJSON(String tableJSON) {
+    public void putTableJSON(String tableJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Table table = mapper.readValue(tableJSON, Table.class);
-            api.createTable(table);
+            api.createTable(id,table);
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -189,13 +192,13 @@ public class M2M {
      * @param table
      */
     @DELETE
-    @Path("/json/table")
+    @Path("/{id}/json/table")
     @Consumes("application/json")
-    public void dropTableJSON(String tableJSON) {
+    public void dropTableJSON(String tableJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Table table = mapper.readValue(tableJSON, Table.class);
-            api.dropTable(table);
+            api.dropTable(id,table);
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -216,12 +219,12 @@ public class M2M {
      * @return
      */
     @POST
-    @Path("/table/row")
+    @Path("/{id}/table/row")
     @Consumes("application/xml")
     @Produces("application/xml")
-    public Collection<TableRow> retrieveXRows(TableQuery querry) {
+    public Collection<TableRow> retrieveXRows(TableQuery querry,@PathParam("id")String id) {
 
-        List<Row> rows = api.selectXRowsFromTable(querry);
+        List<Row> rows = api.selectXRowsFromTable(id,querry);
         if (rows == null) {
             return new ArrayList<TableRow>();
         }
@@ -295,16 +298,16 @@ public class M2M {
      * @return
      */
     @POST
-    @Path("/json/table/row")
+    @Path("/{id}/json/table/row")
     @Consumes("application/json")
     @Produces("application/json")
-    public Collection<TableRow> retrieveXRows(String querryJSON) {
+    public Collection<TableRow> retrieveXRows(String querryJSON,@PathParam("id")String id) {
         List<TableRow> retrievedRows = new ArrayList<TableRow>();
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             TableQuery tableQuery = mapper.readValue(querryJSON, TableQuery.class);
 
-            List<Row> rows = api.selectXRowsFromTable(tableQuery);
+            List<Row> rows = api.selectXRowsFromTable(id,tableQuery);
             if (rows == null) {
                 return new ArrayList<TableRow>();
             }
@@ -374,10 +377,10 @@ public class M2M {
      * indexes exist
      */
     @PUT
-    @Path("/xml/table/index")
+    @Path("/{id}/xml/table/index")
     @Consumes("application/xml")
-    public void createIndex(Table table) {
-        api.createIndex(table.getKeyspace().getName(), table.getName(), table.getColumns());
+    public void createIndex(Table table,@PathParam("id")String id) {
+        api.createIndex(id,table.getKeyspace().getName(), table.getName(), table.getColumns());
     }
 
     /**
@@ -387,10 +390,10 @@ public class M2M {
      * some indexes exist
      */
     @DELETE
-    @Path("/xml/table/index")
+    @Path("/{id}/xml/table/index")
     @Consumes("application/xml")
-    public void deleteIndex(Table table) {
-        api.deleteIndex(table.getKeyspace().getName(), table.getName(), table.getColumns());
+    public void deleteIndex(Table table,@PathParam("id")String id) {
+        api.deleteIndex(id,table.getKeyspace().getName(), table.getName(), table.getColumns());
     }
 
     /**
@@ -400,13 +403,13 @@ public class M2M {
      * indexes exist
      */
     @PUT
-    @Path("/json/table/index")
+    @Path("/{id}/json/table/index")
     @Consumes("application/json")
-    public void createIndexJSON(String tableJSON) {
+    public void createIndexJSON(String tableJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Table table = mapper.readValue(tableJSON, Table.class);
-            api.createIndex(table.getKeyspace().getName(), table.getName(), table.getColumns());
+            api.createIndex(id,table.getKeyspace().getName(), table.getName(), table.getColumns());
         } catch (IOException ex) {
             Logger.getLogger(M2M.class
                     .getName()).log(Level.ERROR, null, ex);
@@ -420,13 +423,13 @@ public class M2M {
      * some indexes exist
      */
     @DELETE
-    @Path("/json/table/index")
+    @Path("/{id}/json/table/index")
     @Consumes("application/json")
-    public void deleteIndexJSON(String tableJSON) {
+    public void deleteIndexJSON(String tableJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             Table table = mapper.readValue(tableJSON, Table.class);
-            api.deleteIndex(table.getKeyspace().getName(), table.getName(), table.getColumns());
+            api.deleteIndex(id,table.getKeyspace().getName(), table.getName(), table.getColumns());
         } catch (IOException ex) {
             Logger.getLogger(M2M.class
                     .getName()).log(Level.ERROR, null, ex);
@@ -440,12 +443,12 @@ public class M2M {
      * For the current time, we support as row values String, Double and Int.
      */
     @PUT
-    @Path("/xml/table/row")
+    @Path("/{id}/xml/table/row")
     @Consumes("application/xml")
-    public void putTableRows(CreateRowsStatement createRowsStatement) {
+    public void putTableRows(CreateRowsStatement createRowsStatement,@PathParam("id")String id) {
         Table table = createRowsStatement.getTable();
 
-        api.insertRowsInTable(table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
+        api.insertRowsInTable(id,table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
 
         //also push this in the queue
 //        try {
@@ -477,16 +480,16 @@ public class M2M {
      * For the current time, we support as row values String, Double and Int.
      */
     @PUT
-    @Path("/json/table/row")
+    @Path("/{id}/json/table/row")
     @Consumes("application/json")
-    public void putTableRowsJSON(String createRowsStatementJSON) {
+    public void putTableRowsJSON(String createRowsStatementJSON, @PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             CreateRowsStatement createRowsStatement = mapper.readValue(createRowsStatementJSON, CreateRowsStatement.class);
 
             Table table = createRowsStatement.getTable();
 
-            api.insertRowsInTable(table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
+            api.insertRowsInTable(id,table.getKeyspace().getName(), table.getName(), createRowsStatement.getRows());
 
             //also push this in the queue
 //
@@ -529,10 +532,10 @@ public class M2M {
      *
      */
     @DELETE
-    @Path("/xml/table/row")
+    @Path("/{id}/xml/table/row")
     @Consumes("application/xml")
-    public void deleteTableRows(TableQuery querry) {
-        api.deleteRowsFromTable(querry);
+    public void deleteTableRows(TableQuery querry,@PathParam("id")String id) {
+        api.deleteRowsFromTable(id,querry);
     }
 
     /**
@@ -549,24 +552,26 @@ public class M2M {
      * are supported
      *
      */
+   
     @DELETE
-    @Path("/json/table/row")
+    @Path("/{id}/json/table/row")
     @Consumes("application/json")
-    public void deleteTableRowsJSON(String querryJSON) {
+    public void deleteTableRowsJSON(String querryJSON,@PathParam("id")String id) {
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             TableQuery tableQuery = mapper.readValue(querryJSON, TableQuery.class);
-            api.deleteRowsFromTable(tableQuery);
+            api.deleteRowsFromTable(id,tableQuery);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
+    
     @GET
-    @Path("/monitoring")
+    @Path("/{id}/monitoring")
     @Produces("application/xml")
-    public MonitoringData getMonitoringInfo() {
-        return api.getMonitoringData();
+     public MonitoringData getMonitoringInfo(@PathParam("id")String id) {
+        return api.getMonitoringInfo(id);
     }
+    
 
 }
