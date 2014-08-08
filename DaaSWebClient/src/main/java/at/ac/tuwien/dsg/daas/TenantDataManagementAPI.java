@@ -59,4 +59,5 @@ public  void addTenant (String tenant, String host, String port);
     public int getCasandraPort(String tenant);
  
         public MonitoringData getMonitoringInfo(String id);
+    public MonitoringData getMonitoringInfo();
 }

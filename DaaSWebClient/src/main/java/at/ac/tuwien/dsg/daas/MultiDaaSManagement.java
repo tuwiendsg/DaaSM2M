@@ -122,6 +122,27 @@ public class MultiDaaSManagement implements TenantDataManagementAPI{
         return daasDelegateInstancesForTenants.get(id).getMonitoringData();
     }
 
+    public MonitoringData getMonitoringInfo() {
+        MonitoringData result = new MonitoringData();
+        result.setAverageResponseTime(0l);
+        result.setAverageTroughput(0l);
+        result.setPendingRequests(0);
+       long rt = 0;
+       long throughput=0;
+       int requests = 0;
+        for (String tenantID : daasDelegateInstancesForTenants.keySet()){
+          MonitoringData monitoringData=daasDelegateInstancesForTenants.get(tenantID).getMonitoringData();
+          
+          rt+=monitoringData.getAverageResponseTime();
+          throughput+=monitoringData.getAverageTroughput();
+          requests += monitoringData.getPendingRequests();
+       }
+        result.setAverageResponseTime(rt/daasDelegateInstancesForTenants.keySet().size());
+        result.setAverageTroughput(throughput);
+        result.setPendingRequests(requests);
+        return result;
+    }
+
 
 }
 

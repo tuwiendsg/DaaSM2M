@@ -4,16 +4,19 @@
  */
 package at.ac.tuwien.dsg.daas.services;
 
+import at.ac.tuwien.dsg.daas.DaaSDelegate;
 import at.ac.tuwien.dsg.daas.DaaSDelegate.MonitoringData;
 
 import at.ac.tuwien.dsg.daas.MultiDaaSManagement;
 import at.ac.tuwien.dsg.daas.TenantDataManagementAPI;
+import at.ac.tuwien.dsg.daas.config.CassandraAccessProperties;
 import at.ac.tuwien.dsg.daas.entities.CreateRowsStatement;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.RowColumn;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
+import at.ac.tuwien.dsg.daas.util.TenantData;
 
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.Row;
@@ -572,6 +575,30 @@ public class M2M {
      public MonitoringData getMonitoringInfo(@PathParam("id")String id) {
         return api.getMonitoringInfo(id);
     }
+     @GET
+    @Path("/monitoring")
+    @Produces("application/xml")
+     public MonitoringData getMonitoringInfo() {
+        return api.getMonitoringInfo();
+    }
     
-
+     @PUT
+    @Path("/tenant")
+    @Consumes("application/xml")
+    public void addTenant(TenantData tenantDescription) {
+         if (tenantDescription.getHost()==null || tenantDescription.getHost().equalsIgnoreCase("")){
+        api.addTenant(tenantDescription.getTenantID());
+         }else{
+             api.addTenant(tenantDescription.getTenantID(),tenantDescription.getHost(), tenantDescription.getPort());
+         }
+    }
+      @DELETE
+    @Path("/tenant")
+    @Consumes("text/plain")
+    public void deleteTenant(String tenantID) {
+        api.removeTenant(tenantID);
+    } 
+     
+     
+    
 }
