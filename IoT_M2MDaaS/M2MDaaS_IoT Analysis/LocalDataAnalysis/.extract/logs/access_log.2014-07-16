@@ -1,0 +1,2 @@
+0:0:0:0:0:0:0:1 - - [16/Jul/2014:09:14:51 +0200] GET /LocalProcessingService/restWS/bufferSize HTTP/1.1 200 11 http-bio-8080-exec-1 45
+0:0:0:0:0:0:0:1 - - [16/Jul/2014:09:14:51 +0200] GET /favicon.ico HTTP/1.1 404 - http-bio-8080-exec-2 0

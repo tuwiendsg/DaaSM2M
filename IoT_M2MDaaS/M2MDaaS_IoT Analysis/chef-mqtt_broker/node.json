@@ -1,0 +1,6 @@
+{
+  "name":"my_node",
+  "run_list": [
+    "recipe[java]", "recipe[activemq]"
+  ]
+}

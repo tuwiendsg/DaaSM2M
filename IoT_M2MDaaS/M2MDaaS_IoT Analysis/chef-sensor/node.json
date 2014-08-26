@@ -1,0 +1,6 @@
+{
+  "name":"my_node",
+  "run_list": [
+    "recipe[java]", "recipe[bootstrap_container]",  "recipe[sdmqtt-client]", "recipe[sdsensor-config-mqtt]", "recipe[sdsensor]"
+  ]
+}
