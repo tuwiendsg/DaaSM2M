@@ -27,6 +27,7 @@ public interface DataManagementAPI {
     public void closeConnection();
 
     public void createKeyspace(Keyspace keyspace);
+
     public List<Row> listKeyspaces();
 
     public void dropKeyspace(Keyspace keyspace);
@@ -48,8 +49,4 @@ public interface DataManagementAPI {
     public void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition);
 
     public void deleteRowsFromTable(TableQuery query);
-
-    public String getCassandraHostIP();
-
-    public int getCasandraPort();
 }

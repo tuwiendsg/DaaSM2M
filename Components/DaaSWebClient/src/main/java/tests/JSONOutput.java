@@ -20,9 +20,9 @@ import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -34,7 +34,6 @@ public class JSONOutput {
 
     public static void main(String[] main) throws IOException {
 
-
         ObjectMapper mapper = new ObjectMapper();
         File file = new File("./examples/");
         if (!file.exists()) {
@@ -44,7 +43,6 @@ public class JSONOutput {
         {
             Keyspace k = new Keyspace("DDD");
             mapper.writeValue(new File("./examples/keyspace.json"), k);
-
 
             {
                 Table t = new Table(k, "tableName", "pk", "pkt");
@@ -64,7 +62,6 @@ public class JSONOutput {
                 mapper.writeValue(new File("./examples/query.json"), query);
 
             }
-
 
         }
     }
