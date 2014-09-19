@@ -7,6 +7,12 @@ CASSANDRA_NODE_IP=
 AMQP_IP=localhost
 AMQP_PORT=9124
 AMQP_QUEUE_NAME=DB_LOG
+#CASSANDRA, MOM, or BOTH
+#PROFILES="CASSANDRA,MOM"
+#PROFILES="MOM"
+#PROFILES="CASSANDRA"
+
+PROFILES="CASSANDRA,MOM"
 
 #CASSANDRA_NODE_IP=$head2datanode_IP
 
@@ -25,6 +31,8 @@ eval "sed -i 's#AMQP\.IP=.*#AMQP.IP=$AMQP_IP#' ../config/daas.properties"
 eval "sed -i 's#AMQP\.PORT=.*#AMQP.PORT=$AMQP_PORT#' ../config/daas.properties"
 eval "sed -i 's#AMQP\.QUEUE_NAME=.*#AMQP_QUEUE_NAME=$AMQP_QUEUE_NAME#' ../config/daas.properties"
 
+#update DaaS profiles: usign CASSANDRA backend, MOM (AMQP), or both?
+eval "sed -i 's#PROFILES=.*#PROFILES=$PROFILES#' ../config/daas-service"
 
 #put daa-service in services
 sudo -S cp ./daas-service /etc/init.d/daas-service
