@@ -48,6 +48,7 @@ public class ProcessSensorLocationData implements ProcessData{
                  tableNames.add(jsn.getString("id"));
              }
          }
+
          sensorValues.put("longitude",jsn.getString("longitude"));
          sensorValues.put("latitude",jsn.getString("latitude"));
          
