@@ -16,7 +16,7 @@ DAEMONDIR=./
 DAEMON=DaaSQueue-1.0.jar
 PIDDIR=/tmp/
 PIDFILE=$PIDDIR/queue-pid
-LOG_DIR=/tmp/mela
+LOG_DIR=/tmp/daas
 
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed"  
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
@@ -26,7 +26,7 @@ test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
 case "$1" in
 	start)
 		log_daemon_msg "Starting queuedaemon"
-		log_progress_msg "mela"
+		log_progress_msg "queue"
 		# Make sure we have our PIDDIR, even if it's on a tmpfs
 		# install -o root -g root -m 755 -d $PIDDIR
         if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDFILE --make-pidfile --background --exec $JAVA -- -DLOG_DIR=$LOG_DIR -jar $DAEMON; then
@@ -37,14 +37,14 @@ case "$1" in
 		;;
 	stop)
 		log_daemon_msg "Stopping queuedaemon"
-		log_progress_msg "mela"
+		log_progress_msg "queue"
 
 		start-stop-daemon --stop --quiet --pidfile $PIDFILE
 		# Wait a little and remove stale PID file
 		sleep 1
 		if [ -f $PIDFILE ] && ! ps h `cat $PIDFILE` > /dev/null
 		then
-			# Stale PID file (Mela was succesfully stopped),
+			# Stale PID file (queue was succesfully stopped),
 			# remove it
 			rm -f $PIDFILE
 		fi

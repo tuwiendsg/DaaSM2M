@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
  * @author daniel-tuwien Delegate to support monitoring of RT and Throughput
  */
 @Service
-public class DaaSDelegate implements DataManagementAPI {
+public class DaaSDelegate {
 
     static final org.slf4j.Logger log = LoggerFactory.getLogger(DaaSDelegate.class);
 
