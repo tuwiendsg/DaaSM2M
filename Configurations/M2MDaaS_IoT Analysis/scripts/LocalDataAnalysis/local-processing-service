@@ -29,7 +29,7 @@ IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 #contextualize DaaS for Cassadra
 
 eval "sed -i 's#\<MessageQueueHost =.*#MessageQueueHost =$QueueServiceUnit_IP#' $DAEMONDIR/config.properties"
-eval "sed -i 's#\<HAProxyIP =.*#MessageQueueHost =$LoadBalancerServiceUnit_IP#' $DAEMONDIR/config.properties"
+eval "sed -i 's#\<HAProxyIP =.*#HAProxyIP =$LoadBalancerUnit_IP#' $DAEMONDIR/config.properties"
 
 
 
