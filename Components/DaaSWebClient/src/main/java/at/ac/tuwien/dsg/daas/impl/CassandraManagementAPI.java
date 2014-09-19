@@ -7,7 +7,7 @@
 package at.ac.tuwien.dsg.daas.impl;
 
 import at.ac.tuwien.dsg.daas.DataManagementAPI;
-import at.ac.tuwien.dsg.daas.DataManagementAPIFactory;
+//import at.ac.tuwien.dsg.daas.DataManagementAPIFactory;
 import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.RowColumn;
@@ -27,9 +27,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Uses DataStax Java Driver for Apache Cassandra
@@ -38,9 +42,15 @@ import org.apache.log4j.Logger;
  *
  * Author: Daniel Moldovan Institution: Vienna University of Technology
  */
+//@Component
 public class CassandraManagementAPI implements DataManagementAPI {
 
+    static final org.slf4j.Logger log = LoggerFactory.getLogger(CassandraManagementAPI.class);
+
+//    @Value("${CassandraNode.IP:localhost}")
     private String cassandraHostIP;
+
+//    @Value("${CassandraNode.PORT:9042}")
     private int casandraPort;
     // private Cluster cluster;
     private Session session;
@@ -50,8 +60,16 @@ public class CassandraManagementAPI implements DataManagementAPI {
         this.casandraPort = casandraPort;
     }
 
+    public CassandraManagementAPI() {
+    }
+
+    @PostConstruct
+    public void init() {
+        this.openConnection();
+    }
+
     public void openConnection() {
-        Logger.getLogger(DataManagementAPIFactory.class).log(Level.INFO, "Connecting to Cassandra at " + cassandraHostIP + ":" + casandraPort);
+        log.info("Connecting to Cassandra at " + cassandraHostIP + ":" + casandraPort);
         if (session == null) {
             Cluster cluster = Cluster.builder()
                     // .withPort(casandraPort)
@@ -69,7 +87,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
     }
 
     public void closeConnection() {
-        session.shutdown();
+        session.close();
         session = null;
     }
 
@@ -97,9 +115,9 @@ public class CassandraManagementAPI implements DataManagementAPI {
      * performance) or anything else
      * @param columns a map containing as Key the column NAME and as value the
      * column CQL3 data type
-	 *
+     *
      */
-	// Column type list
+    // Column type list
     // CQL3 data type | Java type
     // ascii | java.lang.String
     // bigint | long
@@ -358,11 +376,19 @@ public class CassandraManagementAPI implements DataManagementAPI {
     }
 
     public String getCassandraHostIP() {
-        return "" + cassandraHostIP;
+        return cassandraHostIP;
+    }
+
+    public void setCassandraHostIP(String cassandraHostIP) {
+        this.cassandraHostIP = cassandraHostIP;
     }
 
     public int getCasandraPort() {
-        return 0 + casandraPort;
+        return casandraPort;
+    }
+
+    public void setCasandraPort(int casandraPort) {
+        this.casandraPort = casandraPort;
     }
 
     @Override

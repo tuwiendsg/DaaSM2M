@@ -5,23 +5,25 @@
  */
 package at.ac.tuwien.dsg.daas;
 
-import at.ac.tuwien.dsg.daas.config.CassandraAccessProperties;
 import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
-import at.ac.tuwien.dsg.daas.util.ConfigurationFilesLoader;
+//import at.ac.tuwien.dsg.daas.util.ConfigurationFilesLoader;
 import at.ac.tuwien.dsg.daas.util.Monitor;
 import com.datastax.driver.core.Row;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -29,96 +31,110 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author daniel-tuwien Delegate to support monitoring of RT and Throughput
  */
+@Service
 public class DaaSDelegate implements DataManagementAPI {
 
-    private static DaaSDelegate instance;
+    static final org.slf4j.Logger log = LoggerFactory.getLogger(DaaSDelegate.class);
 
-    private DataManagementAPI dataManagementAPI;
-    private static Monitor monitor;
+//    @Autowired
+//    @Qualifier(value = "dataManagementDelegate")
+    private List<DataManagementAPI> dataManagementAPIs;
 
-    private static AtomicInteger requestCount = new AtomicInteger(0);
+    private Monitor monitor;
 
-    static {
+    private AtomicInteger requestCount = new AtomicInteger(0);
 
-        String date = new Date().toString();
-        date = date.replace(" ", "_");
-        date = date.replace(":", "_");
-        System.getProperties().put("recording_date", date);
+    @Autowired
+    private ApplicationContext context;
 
-        InputStream log4jStream;
-        try {
-            log4jStream = ConfigurationFilesLoader.getLog4JPropertiesStream();
-            if (log4jStream != null) {
-                PropertyConfigurator.configure(log4jStream);
-                try {
-                    log4jStream.close();
-                } catch (IOException e) {
-                    Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-        }
-
-    }
-
-    static {
-        try {
-            instance = new DaaSDelegate();
-        } catch (Exception e) {
-            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
-        }
-    }
-
-    static {
+//    {
+//
+//        String date = new Date().toString();
+//        date = date.replace(" ", "_");
+//        date = date.replace(":", "_");
+//        System.getProperties().put("recording_date", date);
+//
+//        InputStream log4jStream;
+//        try {
+//            log4jStream = ConfigurationFilesLoader.getLog4JPropertiesStream();
+//            if (log4jStream != null) {
+//                PropertyConfigurator.configure(log4jStream);
+//                try {
+//                    log4jStream.close();
+//                } catch (IOException e) {
+//                    Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
+//                }
+//            }
+//        } catch (FileNotFoundException e) {
+//            Logger.getLogger(DataManagementAPIFactory.class).log(Level.ERROR, e);
+//        }
+//
+//    }
+    {
+        dataManagementAPIs = new ArrayList<DataManagementAPI>();
         monitor = Monitor.getInstance();
     }
 
-    public static DaaSDelegate getInstance() {
-        return instance;
-    }
-
-    private static Integer newRequestID() {
+    private Integer newRequestID() {
         return requestCount.incrementAndGet();
     }
 
-    private DaaSDelegate() {
-        dataManagementAPI = DataManagementAPIFactory.createCassandraFactory(CassandraAccessProperties.getCassandraAccessIP(),
-                CassandraAccessProperties.getCassandraAccessPort());
+    public DaaSDelegate() {
+
+    }
+
+    @PostConstruct
+    public void init() {
+        // list all MELA datasources from application context
+        //maybe in future add specific source for specific service
+        Map<String, DataManagementAPI> dataSources = context.getBeansOfType(DataManagementAPI.class);
+
+        for (String dataSourceName : dataSources.keySet()) {
+            DataManagementAPI dataSource = dataSources.get(dataSourceName);
+            log.debug("Found Datasource '{}': {}", dataSourceName, dataSource);
+            dataManagementAPIs.add(dataSource);
+        }
     }
 
     public void openConnection() {
-        dataManagementAPI.openConnection();
     }
 
     public void closeConnection() {
-        dataManagementAPI.openConnection();
     }
 
     public void createKeyspace(Keyspace keyspace) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.createKeyspace(keyspace);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.createKeyspace(keyspace);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
     }
 
     public List<Row> listKeyspaces() {
-        List<Row> res;
+        List<Row> res = new LinkedList<Row>();
 
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            res = dataManagementAPI.listKeyspaces();
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                res.addAll(dataManagementAPI.listKeyspaces());
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -128,11 +144,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void dropKeyspace(Keyspace keyspace) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.dropKeyspace(keyspace);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.dropKeyspace(keyspace);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -140,11 +158,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void createTable(Table table) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.createTable(table);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.createTable(table);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -152,11 +172,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void createIndex(String keyspaceName, String tableName, Collection<Column> columns) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.createIndex(keyspaceName, tableName, columns);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.createIndex(keyspaceName, tableName, columns);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -164,11 +186,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void deleteIndex(String keyspaceName, String tableName, Collection<Column> columns) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -177,11 +201,13 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public void dropTable(Table table) {
 
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.dropTable(table);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.dropTable(table);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -189,12 +215,17 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
-        Row r;
-        Integer reqID = DaaSDelegate.newRequestID();
+        Row r = null;
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                r = dataManagementAPI.selectOneRowFromTable(keyspaceName, tableName, condition);
+                if (r != null) {
+                    return r;
+                }
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -204,13 +235,15 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public List<Row> selectXRowsFromTable(TableQuery querry) {
-        List<Row> res;
+        List<Row> res = new ArrayList<Row>();
 
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            res = dataManagementAPI.selectXRowsFromTable(querry);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                res.addAll(dataManagementAPI.selectXRowsFromTable(querry));
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -220,11 +253,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -232,11 +267,13 @@ public class DaaSDelegate implements DataManagementAPI {
     }
 
     public void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -245,23 +282,17 @@ public class DaaSDelegate implements DataManagementAPI {
 
     public void deleteRowsFromTable(TableQuery query) {
 
-        Integer reqID = DaaSDelegate.newRequestID();
+        Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
         try {
-            dataManagementAPI.deleteRowsFromTable(query);
+            for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
+                dataManagementAPI.deleteRowsFromTable(query);
+            }
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
 
-    }
-
-    public String getCassandraHostIP() {
-        return dataManagementAPI.getCassandraHostIP();
-    }
-
-    public int getCasandraPort() {
-        return dataManagementAPI.getCasandraPort();
     }
 
     public MonitoringData getMonitoringData() {

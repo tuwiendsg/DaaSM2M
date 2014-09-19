@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>DaaS</display-name>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:daas-context.xml</param-value>
+        <!--<param-value>file:///etc/mela/context.xml</param-value>--> 
+    </context-param>
+    
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
     <servlet>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <description>Multiple packages, separated by semicolon(;), can be specified in param-value</description>
-            <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>at.ac.tuwien.dsg.daas;at.ac.tuwien.dsg.daas.services</param-value>
-        </init-param>
+        <servlet-name>CXFServlet</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
     <servlet-mapping>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>  <!-- replace this with simply /api/* some time soon -->
     </servlet-mapping>
     <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
+        <session-timeout>30</session-timeout>
     </session-config>
+    
+    
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

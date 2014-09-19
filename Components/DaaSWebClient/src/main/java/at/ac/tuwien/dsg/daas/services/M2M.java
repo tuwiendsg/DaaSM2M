@@ -15,6 +15,8 @@ import at.ac.tuwien.dsg.daas.entities.TableRow;
 
 import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.Row;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -35,22 +37,29 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.Provider;
+import org.springframework.stereotype.Service;
 
 //import org.apache.activemq.ActiveMQConnectionFactory;
 //import org.apache.activemq.broker.BrokerService;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST Web Service
  *
  * Author: Daniel Moldovan Institution: Vienna University of Technology
  */
+@Service
+@Provider
 @Path("/")
+@Api(value = "/", description = "The M2M is the entry point for all Cassandra access")
 public class M2M {
 
     @Context
     private UriInfo context;
-    private static DaaSDelegate api;
+
+    @Autowired
+    private DaaSDelegate api;
     private static final Charset charset = Charset.forName("UTF-8");
     private static final CharsetDecoder decoder = charset.newDecoder();
 
@@ -64,10 +73,6 @@ public class M2M {
 //            Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
 //        }
 //    }
-    static {
-        api = DaaSDelegate.getInstance();
-    }
-
     /**
      * Creates a new instance of M2M
      */
