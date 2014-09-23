@@ -36,6 +36,7 @@ public class QueueConsumer implements MessageListener {
                     String sensorOperation = fieldsNames.nextElement().toString();
                     String data = mapMessage.getString(sensorOperation);
                     log.info("Received " + sensorOperation + data);
+                    System.out.println("Received " + sensorOperation + data);
                     //depending on the type of received data, it can be converted with JAXB to classed used by the DaaS, such as TableRow
                     //the type of operation is shown in at.ac.tuwien.dsg.daas.impl.AMQPConnector in DaaSWebService project
                     if (sensorOperation.equals("INSERT_ROWS")) {

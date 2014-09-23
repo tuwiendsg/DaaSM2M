@@ -4,7 +4,6 @@
 
 AMQP_PORT=9124
 
-
 CURRENT_DIR=$(pwd)
 
 #wget -nv http://128.130.172.215/salsa/upload/files/queue/queue-1.0.tar.gz

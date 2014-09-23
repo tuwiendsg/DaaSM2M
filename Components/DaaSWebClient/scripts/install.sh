@@ -1,7 +1,5 @@
 #!/bin/bash
-
-#!/bin/bash
-
+ 
 CASSANDRA_NATIVE_CQL_PORT=9142
 CASSANDRA_NODE_IP=
 AMQP_IP=localhost

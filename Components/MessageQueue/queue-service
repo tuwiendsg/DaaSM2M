@@ -10,7 +10,8 @@
 
 RUN_MODE="daemons"
 
-JAVA=/home/daniel-tuwien/jdk1.7.0_40/bin/java
+#JAVA=/home/daniel-tuwien/jdk1.7.0_40/bin/java
+JAVA=$(which java)
 NAME=queue
 DAEMONDIR=./
 DAEMON=DaaSQueue-1.0.jar

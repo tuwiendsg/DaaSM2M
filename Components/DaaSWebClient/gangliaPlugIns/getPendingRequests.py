@@ -19,7 +19,7 @@ def _getData():
                result_xml = result.read()
                #print result_xml
                dom = parseString(result_xml)
-               xmlTag = dom.getElementsByTagName('throughput')
+               xmlTag = dom.getElementsByTagName('pendingRequests')
                #print int(xmlTag[0].firstChild.nodeValue)
                #returns only avg reponse time
                return int(xmlTag[0].firstChild.nodeValue)
@@ -33,14 +33,14 @@ def temp_handler(name):
 def metric_init(params):
     global descriptors
 
-    d1 = {'name': 'throughput',
+    d1 = {'name': 'pendingRequests',
         'call_back': temp_handler,
         'time_max': 5,
         'value_type': 'int',
  'units': '#',
         'slope': 'both',
         'format': '%d',
-        'description': 'Average throughput per 5 seconds',
+        'description': 'Number of pending requests',
         'groups': 'performance'}
 
     descriptors = [d1]

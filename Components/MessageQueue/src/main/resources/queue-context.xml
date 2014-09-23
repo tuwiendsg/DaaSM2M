@@ -20,12 +20,12 @@
 
     <!--     JMS stuff     -->    
     <bean id="jmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:9124"/>
+        <property name="brokerURL"  value="tcp://${Queue.IP}:${Queue.Port}"/>
     </bean>
 
     <amq:broker useJmx="true" persistent="true">
         <amq:transportConnectors>
-            <amq:transportConnector uri="tcp://localhost:${Queue.Port}"/>
+            <amq:transportConnector uri="tcp://${Queue.IP}:${Queue.Port}"/>
         </amq:transportConnectors>
     </amq:broker>
 

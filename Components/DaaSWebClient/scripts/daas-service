@@ -10,7 +10,7 @@
 
 RUN_MODE="daemons"
 
-JAVA=/home/daniel-tuwien/jdk1.7.0_40/bin/java
+JAVA=(which java)
 NAME=daas-pid
 DAEMONDIR=./
 DAEMON=DaaS.war.jar
@@ -20,6 +20,11 @@ MELA_HTTP_PORT=8080
 LOG_DIR=/tmp/daas
 #Active profiles, can be can be CASSANDRA, MOM, or both
 PROFILES=CASSANDRA,MOM
+
+HAPROXY_REGISTER_COMMAND="curl -X PUT http://$LoadBalancerIP:5001/service"
+HAPROXY_DEREGISTER_COMMAND="curl -X DELETE http://$LoadBalancerIP:5001/service"
+
+IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed"  
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
@@ -36,6 +41,8 @@ case "$1" in
 		    log_end_msg 1
 		    exit 1
 		fi
+                log_daemon_msg "Register in HAPROXY"      
+                eval "$HAPROXY_REGISTER_COMMAND/$IP/$PORT" 
 		log_end_msg 0
 		;;
 	stop)
@@ -47,10 +54,12 @@ case "$1" in
 		sleep 1
 		if [ -f $PIDFILE ] && ! ps h `cat $PIDFILE` > /dev/null
 		then
+                        PID_PORT=`echo $PIDFILE | rev | cut -d/ -f1 | rev` 
+            		eval "$HAPROXY_DEREGISTER_COMMAND/$IP/$PID_PORT 
 			# Stale PID file (daas was succesfully stopped),
 			# remove it
 			rm -f $PIDFILE
-		fi
+		fi    
 		log_end_msg 0
 		;;
 	restart)
