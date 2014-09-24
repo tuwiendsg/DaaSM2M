@@ -37,7 +37,7 @@ public class MQConsumer implements MessageListener, ExceptionListener,Runnable {
 	private Destination destination;
 	private MessageConsumer consumer = null;
 	private Connection connection;
-          private ProcessData processSensorLocationData = new ProcessSensorLocationData();
+          private ProcessData processSensorLocationData = new GenericNewSensorDataProcessing();
         private int REFRESH_TIME=Configuration.getRefreshRate();
         private List< HashMap<String,HashMap<String,String>> > storeData = new ArrayList< HashMap<String,HashMap<String,String>> >();
          private Thread t;

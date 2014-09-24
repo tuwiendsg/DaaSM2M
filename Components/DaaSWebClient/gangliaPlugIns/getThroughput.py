@@ -37,7 +37,7 @@ def metric_init(params):
         'call_back': temp_handler,
         'time_max': 5,
         'value_type': 'int',
- 'units': 'milliseconds',
+ 'units': '#',
         'slope': 'both',
         'format': '%d',
         'description': 'Average throughput per 5 seconds',
