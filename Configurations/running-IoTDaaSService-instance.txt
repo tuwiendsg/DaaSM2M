@@ -1,0 +1,38 @@
+This file briefly describe the running instance of the IoT-DaaS-Service application. This only apply for the current instance and must be changed when the application is updated.
+
+The IoT-DaaS-Service is deployed on DSG private cloud. Please refer to the application description in the TOSCA file: IoTDaasService.tosca.xml. Below are some notes when enacting with the configuration capabilities of the application:
+ - The whole application is refer by its SERVICENAME which is "DaaSService".
+ - In this running, we have only 1 topology including all the service units. That mean we do not have topology capabilities.
+ - The service units are referred by their IDs which are defined in the TOSCA.
+ - The service instances (e.g. VM instances, software instances) are referred by IDs, which are generated when deploying. The ID starts from zero and increases.
+ - The artifact is stored in a HTTP server for directed download.
+ 
+The current configuration of the IoT-DaaS-Service instance:
+ - SALSA instance: http://128.130.172.215:8080/salsa-engine (will be stated by [SALSA ENDPOINT])
+ - SALSA RESTful: [SALSA ENDPOINT]/rest/
+ - IoT-DaaS-Service management web interface: [SALSA ENDPOINT]/?id=DaaSService 
+ 
+Using SALSA RESTful API
+The RESTful API for for service units as following: 
+<METHOD> [SALSA ENDPOINT]/rest/services/{serviceName}/topologies/{topologyName}/nodes/{nodeID}/[parameter]
+Example:
+ - Deploy 10 more sensors:
+   + POST [SALSA ENDPOINT]/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instance-count/10
+ - Remove sensor ID=5
+   + DELETE [SALSA ENDPOINT]/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instances/5
+   
+The following service unit ID can be use in this instance:
+  DataControllerUnit
+  DataNodeUnit
+  LoadBalancerUnit
+  MOM
+  WorkloadGeneratorUnit
+  QueueServiceUnit
+  sensor
+
+Instead of sending request for service unit at software level, user can deploy more VMs for such service unit. These VMs will be reserved for the unit without installing any software on it. By doing that, just send the same request with the ID as format: "os_OF_<ServiceUnitID>". For example, deploy 3 VMs for sensors, just send request to deploy 3 instance of "os_OF_sensor".
+
+Controls the high level configuration by SALSA
+ - Once receive a conmmand to deploy new service unit, SALSA will automatic deploy more VMs underlying if need. The VM spawning will be fail if there is no quota on cloud system or as defining in TOSCA.
+ - Once a VM is destroy, all the software on top of it will be deleted and unregistered to SALSA (no recovery or migration support yet).
+ 
