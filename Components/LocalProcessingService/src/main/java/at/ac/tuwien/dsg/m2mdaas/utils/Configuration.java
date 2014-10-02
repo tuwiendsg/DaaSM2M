@@ -74,5 +74,14 @@ public class Configuration {
     	return (Integer.parseInt(configuration.getProperty("REFRESH_RATE")));
       
         }
+   public static String getEventDefinition(){
+       // define events
+       return configuration.getProperty("EventDefinition");
+   }
+   public static String getCurrentPolicy(){
+       // choose between sending policies: SEND_EVENTS, SEND_ALL, SEND_MIXED
+       
+       return configuration.getProperty("Policy");
+   }
 
 }
