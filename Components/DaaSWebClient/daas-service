@@ -10,10 +10,10 @@
 
 RUN_MODE="daemons"
 
-JAVA=/home/daniel-tuwien/jdk1.7.0_40/bin/java
+JAVA=$(which java)
 NAME=daas-pid
 DAEMONDIR=./
-DAEMON=DaaS.war.jar
+DAEMON=DaaS-1.0.jar
 PIDDIR=/tmp/
 PIDFILE=$PIDDIR/daas-pid.pid
 MELA_HTTP_PORT=8080

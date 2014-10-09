@@ -27,7 +27,7 @@ public class TableQuery {
     //how many max rows to return
     @XmlElement(name = "MaxResultCount", required = false)
     private int maxResultCount = 1;
-    
+
     public Table getTable() {
         return table;
     }
@@ -51,8 +51,20 @@ public class TableQuery {
     public void setMaxResultCount(int maxResultCount) {
         this.maxResultCount = maxResultCount;
     }
-    
-    
-    
-    
+
+    public TableQuery withTable(final Table table) {
+        this.table = table;
+        return this;
+    }
+
+    public TableQuery withCondition(final String condition) {
+        this.condition = condition;
+        return this;
+    }
+
+    public TableQuery withMaxResultCount(final int maxResultCount) {
+        this.maxResultCount = maxResultCount;
+        return this;
+    }
+
 }

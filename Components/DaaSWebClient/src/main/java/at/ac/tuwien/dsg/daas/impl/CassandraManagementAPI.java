@@ -158,6 +158,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
 
         // close the table definition
         createTableStatement += ");";
+        log.debug(createTableStatement);
 
         ResultSet resultSet = session.execute(createTableStatement);
         ExecutionInfo info = resultSet.getExecutionInfo();
@@ -176,6 +177,7 @@ public class CassandraManagementAPI implements DataManagementAPI {
 
             ResultSet resultSet = session.execute(createIndexStatement);
             ExecutionInfo info = resultSet.getExecutionInfo();
+            
         }
     }
 
