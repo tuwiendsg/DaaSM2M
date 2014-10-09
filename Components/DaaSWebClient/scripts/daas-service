@@ -21,6 +21,7 @@ LOG_DIR=/tmp/daas
 #Active profiles, can be can be CASSANDRA, MOM, or both
 PROFILES=CASSANDRA,MOM
 
+LoadBalancerIP=
 HAPROXY_REGISTER_COMMAND="curl -X PUT http://$LoadBalancerIP:5001/service"
 HAPROXY_DEREGISTER_COMMAND="curl -X DELETE http://$LoadBalancerIP:5001/service"
 
