@@ -10,7 +10,7 @@
 
 RUN_MODE="daemons"
 
-JAVA=(which java)
+JAVA=$(which java)
 NAME=daas-pid
 DAEMONDIR=./
 DAEMON=DaaS.war.jar
