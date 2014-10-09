@@ -55,7 +55,7 @@ case "$1" in
 		if [ -f $PIDFILE ] && ! ps h `cat $PIDFILE` > /dev/null
 		then
                         PID_PORT=`echo $PIDFILE | rev | cut -d/ -f1 | rev` 
-            		eval "$HAPROXY_DEREGISTER_COMMAND/$IP/$PID_PORT 
+            		eval "$HAPROXY_DEREGISTER_COMMAND/$IP/$PID_PORT" 
 			# Stale PID file (daas was succesfully stopped),
 			# remove it
 			rm -f $PIDFILE
