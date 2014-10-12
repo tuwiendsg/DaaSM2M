@@ -1,102 +1,66 @@
 ### BEGIN INIT INFO
-# Provides:          daas-service
+# Provides:          mela-analysis-service
 # Required-Start:
 # Required-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start a new daas-service
-# Description:       To start-stop daas-service
+# Short-Description: Start daas daemon
+# Description:       To start-stop MELA-DS
 ### END INIT INFO
 
 RUN_MODE="daemons"
 
-#please configure appropriately
-DAEMONDIR=
-
-JAVA=`which java`
-NAME=daas-service
+JAVA=$(which java)
+NAME=daas-pid
+DAEMONDIR=./
 DAEMON=DaaS.war.jar
-PIDDIR=/tmp/daas
-PIDFILE=$PIDDIR/
-PORT=8080
-HAPROXY_IP=109.231.122.200
+PIDDIR=/tmp/
+PIDFILE=$PIDDIR/daas-pid.pid
+MELA_HTTP_PORT=8080
+LOG_DIR=/tmp/daas
+#Active profiles, can be can be CASSANDRA, MOM, or both
+PROFILES=CASSANDRA,MOM
+
+LoadBalancerIP=
+HAPROXY_REGISTER_COMMAND="curl -X PUT http://$LoadBalancerIP:5001/service"
+HAPROXY_DEREGISTER_COMMAND="curl -X DELETE http://$LoadBalancerIP:5001/service"
 
 IP=`ifconfig eth0 | grep -o 'inet addr:[0-9.]*' | grep -o [0-9.]*`
 
-#contextualize DaaS for Cassadra
-CASSANDRA_SEED_IP="curl http://169.254.169.254/latest/user-data | grep -o CASSANDRA_SEED_IP=[0-9.]* | grep -o [0-9.]*"
-eval "sed -i 's#\<CassandraNode\.IP =.*#CassandraNode\.IP =$CASSANDRA_SEED_IP#' $DAEMONDIR/config/cassandraAccess.properties"
-eval "sed -i 's#\<CassandraNode\.PORT =.*#CassandraNode\.PORT =$CASSANDRA_SEED_PORT#' $DAEMONDIR/config/cassandraAccess.properties"
-
-#ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
-
-HAPROXY_REGISTER_COMMAND=registerToHAProxy
-HAPROXY_DEREGISTER_COMMAND=deregisterToHAProxy
-
-#can also be called remotely through SSH 
-#HAPROXY_REGISTER_COMMAND=HAPROXY_REGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP registerToHAProxy"
-#HAPROXY_DEREGISTER_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /home/ubuntu/key.pem $HAPROXY_IP deregisterToHAProxy"
-
-
-#HAPROXY_DEREGISTER_COMMAND=ssh -i ~/key deregisterToHAProxy
-
-test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "error test -x $JAVA -a -f $DAEMONDIR/$DAEMON"
+test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed"  
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || exit 0
-
-#test -x $DAEMONDIR/$DAEMON || exit 0
 
 . /lib/lsb/init-functions
 
-if [ ! -d /tmp/daas ]; then
-  mkdir /tmp/daas
-fi
-
-
 case "$1" in
 	start)
-                #this checks what pids allready exist, such that it can instantiate multiple on different ports
-                while [ -f $PIDDIR/$PORT ];
-                do 
-		    PORT=$((PORT+1))
-		done
-                log_daemon_msg "Starting DaaS on port $PORT"
-
+		log_daemon_msg "Starting daas daemon"
+		log_progress_msg "mela"
 		# Make sure we have our PIDDIR, even if it's on a tmpfs
 		# install -o root -g root -m 755 -d $PIDDIR
-        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDDIR/$PORT --make-pidfile --background --exec $JAVA -- -jar $DAEMON -httpPort $PORT; then
+        if ! start-stop-daemon --start --chdir $DAEMONDIR --quiet --pidfile $PIDFILE --make-pidfile --background --exec $JAVA -- -DLOG_DIR=$LOG_DIR -jar $DAEMON -httpPort $MELA_HTTP_PORT -Dspring.profiles.active=$PROFILES; then
 		    log_end_msg 1
 		    exit 1
 		fi
-                #if all ok, register to HAPROXY
                 log_daemon_msg "Register in HAPROXY"      
-                $HAPROXY_REGISTER_COMMAND $IP $PORT
+                eval "$HAPROXY_REGISTER_COMMAND/$IP/$MELA_HTTP_PORT" 
 		log_end_msg 0
 		;;
 	stop)
-		 
-                #go through all PIDS and remove first-added
-                for PIDFILE_TO_REMOVE in $PIDDIR/*
-		do
-		log_daemon_msg "Stopping DaaS on port $PIDFILE_TO_REMOVE"       
-		sudo start-stop-daemon --stop --quiet --pidfile $PIDFILE_TO_REMOVE
+		log_daemon_msg "Stopping daas daemon"
+		log_progress_msg "mela"
+
+		start-stop-daemon --stop --quiet --pidfile $PIDFILE
 		# Wait a little and remove stale PID file
 		sleep 1
-		if [ -f $PIDFILE_TO_REMOVE ] && ! ps h `cat $PIDFILE_TO_REMOVE` > /dev/null
-			then
-				# Stale PID file (Mela was succesfully stopped),
-				# remove it
-				rm -f $PIDFILE_TO_REMOVE
-			fi
-                #deregister from HAPROXY
-                log_daemon_msg "deregister from HAPROXY" 
-                #extract PORT from pidFile: revert text, cut from first / and revert back
-                PID_PORT=`echo $PIDFILE_TO_REMOVE | rev | cut -d/ -f1 | rev`
-                $HAPROXY_DEREGISTER_COMMAND $IP $PID_PORT
-
-
-                break;
-                done  
+		if [ -f $PIDFILE ] && ! ps h `cat $PIDFILE` > /dev/null
+		then
+                        PID_PORT=`echo $PIDFILE | rev | cut -d/ -f1 | rev` 
+            		eval "$HAPROXY_DEREGISTER_COMMAND/$IP/$MELA_HTTP_PORT" 
+			# Stale PID file (daas was succesfully stopped),
+			# remove it
+			rm -f $PIDFILE
+		fi    
 		log_end_msg 0
 		;;
 	restart)
@@ -105,10 +69,14 @@ case "$1" in
 		$0 start
 		;;
 	status)
-		 
-		log_success_msg "DaaS might be running"
-		 
-		exit 0
+		pidofproc -p $PIDFILE $JAVA >/dev/null
+		status=$?
+		if [ $status -eq 0 ]; then
+			log_success_msg "daas is running"
+		else
+			log_failure_msg "daas is not running"
+		fi
+		exit $status
 		;;
 	*)
 		echo "Usage: $0 {start|stop|restart|status}"

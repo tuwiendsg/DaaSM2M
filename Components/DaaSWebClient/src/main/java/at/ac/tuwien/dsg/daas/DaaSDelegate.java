@@ -7,15 +7,14 @@ package at.ac.tuwien.dsg.daas;
 
 import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.daas.entities.Keyspace;
+import at.ac.tuwien.dsg.daas.entities.RowColumn;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
 //import at.ac.tuwien.dsg.daas.util.ConfigurationFilesLoader;
 import at.ac.tuwien.dsg.daas.util.Monitor;
 import com.datastax.driver.core.Row;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,12 +27,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +37,7 @@ import org.springframework.stereotype.Service;
  * @author daniel-tuwien Delegate to support monitoring of RT and Throughput
  */
 @Service
-public class DaaSDelegate implements DataManagementAPI {
+public class DaaSDelegate {
 
     static final org.slf4j.Logger log = LoggerFactory.getLogger(DaaSDelegate.class);
 
@@ -120,7 +115,10 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.createKeyspace(keyspace);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
+
             monitor.removeOutstandingRequest(reqID, new Date());
         }
     }
@@ -135,6 +133,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 res.addAll(dataManagementAPI.listKeyspaces());
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -151,6 +151,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.dropKeyspace(keyspace);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -165,6 +167,15 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.createTable(table);
             }
+        } catch (InvalidQueryException e) {
+            String message = e.getMessage();
+            if (message.startsWith("Keyspace") && message.endsWith("does not exist")) {
+                createKeyspace(new Keyspace(table.getKeyspace().getName()));
+                createTable(table);
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -179,6 +190,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.createIndex(keyspaceName, tableName, columns);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -193,6 +206,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.deleteIndex(keyspaceName, tableName, columns);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -208,6 +223,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.dropTable(table);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -226,6 +243,8 @@ public class DaaSDelegate implements DataManagementAPI {
                     return r;
                 }
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -244,6 +263,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 res.addAll(dataManagementAPI.selectXRowsFromTable(querry));
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -260,6 +281,80 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
             }
+        } catch (InvalidQueryException e) {
+            String message = e.getMessage();
+            if (message.contains("unconfigured columnfamily")) {
+                log.error(e.getMessage());
+                log.error("Creating column family(table) with name " + tableName);
+                Table table = new Table()
+                        .withKeyspace(new Keyspace().withName(keyspaceName))
+                        .withName(tableName)
+                        .withPrimaryKeyName("key")
+                        .withPrimaryKeyType("uuid");
+
+                //create columns
+                Collection<Column> columns = new ArrayList<Column>();
+                if (!rows.isEmpty()) {
+                    TableRow row = rows.iterator().next();
+                    for (RowColumn column : row.getValues()) {
+                        if(column.getName().equals(table.getPrimaryKeyName())){
+                            continue;
+                        }
+                        String value = column.getValue();
+                        //currently to check column type we try to confert to double, and if does not work it is string, otherwise it is double
+                        String type = "text";
+                        try {
+                            double tst = Double.parseDouble(value);
+                            type = "double";
+                        } catch (NumberFormatException ex) {
+//                            log.error(ex.getMessage(), ex);
+                        }
+                        columns.add(new Column(column.getName(), type));
+                    }
+                }
+                table.setColumns(columns);
+                createTable(table);
+                insertRowsInTable(keyspaceName, tableName, rows);
+
+            } else if (message.startsWith("Keyspace") && message.endsWith("does not exist")) {
+
+                log.error(e.getMessage());
+                log.error("Creating keyspace with name " + keyspaceName);
+                createKeyspace(new Keyspace(keyspaceName));
+
+                Table table = new Table()
+                        .withKeyspace(new Keyspace().withName(keyspaceName))
+                        .withName(tableName)
+                        .withPrimaryKeyName("key")
+                        .withPrimaryKeyType("uuid");
+
+                //create columns
+                Collection<Column> columns = new ArrayList<Column>();
+                if (!rows.isEmpty()) {
+                    TableRow row = rows.iterator().next();
+                    for (RowColumn column : row.getValues()) {
+                        String value = column.getValue();
+                        //currently to check column type we try to confert to double, and if does not work it is string, otherwise it is double
+                        String type = "text";
+                        try {
+                            double tst = Double.parseDouble(value);
+                            type = "double";
+                        } catch (NumberFormatException ex) {
+//                            log.error(ex.getMessage(), ex);
+                        }
+                        columns.add(new Column(column.getName(), type));
+                    }
+                }
+                log.error("Creating column family(table) with name " + tableName);
+                table.setColumns(columns);
+                createTable(table);
+                insertRowsInTable(keyspaceName, tableName, rows);
+
+            } else {
+                log.error(e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -274,6 +369,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.updateRowInTable(keyspaceName, tableName, newData, condition);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -289,6 +386,8 @@ public class DaaSDelegate implements DataManagementAPI {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.deleteRowsFromTable(query);
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }

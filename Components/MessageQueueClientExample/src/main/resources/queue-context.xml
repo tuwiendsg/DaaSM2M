@@ -17,24 +17,21 @@
 
     <!-- MELA properties -->
     <context:property-placeholder location="file:./config/queue.properties"/>
+    
+      
+    <!-- Adds annotated spring beans -->
+    <context:component-scan base-package="at.ac.tuwien.dsg"/>
 
-    <!--     JMS stuff     -->    
+    <!--<amq:queue id="destination" physicalName="${Queue.Name}"/>-->
+    <!-- create AMQP adapter -->
     <bean id="jmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL"  value="tcp://${Queue.IP}:${Queue.Port}"/>
+        <property name="brokerURL" value="tcp://${Queue.IP}:${Queue.Port}"/>
     </bean>
 
-    <amq:broker useJmx="true" persistent="true">
-        <amq:transportConnectors>
-            <amq:transportConnector uri="tcp://${Queue.IP}:${Queue.Port}"/>
-        </amq:transportConnectors>
-    </amq:broker>
-
-    <!--    <jms:listener-container container-type="default" connection-factory="jmsFactory" acknowledge="auto">
-        <jms:listener destination="MELADataService.Config" ref="commandConsumer"/>
-    </jms:listener-container>-->
- 
-    
-    
-
-
+    <jms:listener-container container-type="default" connection-factory="jmsFactory" acknowledge="auto">
+        <jms:listener destination="${Queue.Name}" ref="queueConsumer"/>
+    </jms:listener-container> 
+     
+  
 </beans>
+ 
