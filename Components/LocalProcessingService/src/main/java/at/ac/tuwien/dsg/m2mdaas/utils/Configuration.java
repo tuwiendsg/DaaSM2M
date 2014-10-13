@@ -74,6 +74,10 @@ public class Configuration {
     	return (Integer.parseInt(configuration.getProperty("REFRESH_RATE")));
       
         }
+      public static int getBufferSize() {
+    	return (Integer.parseInt(configuration.getProperty("MAX_BUFFER_SIZE")));
+      
+        }
    public static String getEventDefinition(){
        // define events
        return configuration.getProperty("EventDefinition");
