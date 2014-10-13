@@ -4,7 +4,7 @@
 
     <groupId>at.ac.tuwien.dsg.viecom.pilot.daas</groupId>
     <artifactId>DaaS</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <version>1.0</version>
 
     <name>DaaS</name>
