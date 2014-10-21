@@ -63,7 +63,9 @@ public class Configuration {
       
     }
     public static String[] getCurrentTables(){
+        if (configuration.getProperty("AvailableTables")!=null && !configuration.getProperty("AvailableTables").equalsIgnoreCase(""))
         return configuration.getProperty("AvailableTables").split(",");
+        else return new String[0];
     }
     
     public static String getMQPort() {
@@ -87,5 +89,12 @@ public class Configuration {
        
        return configuration.getProperty("Policy");
    }
-
+ public static String getBurstSleep(){
+       // define events
+       return configuration.getProperty("BURST_SLEEP");
+   }
+   public static String getBurstSize(){
+       // choose between sending policies: SEND_EVENTS, SEND_ALL, SEND_MIXED
+       return configuration.getProperty("BURST_SIZE");
+   }
 }

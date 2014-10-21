@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
  * @author Georgiana
  */
 public class GenericNewSensorDataProcessing implements ProcessData{
+    private static final Logger LOGGER = Logger.getLogger(GenericNewSensorDataProcessing.class);
 
     public GenericNewSensorDataProcessing() {
         for (String s : Configuration.getCurrentTables()) {
@@ -37,6 +38,7 @@ public class GenericNewSensorDataProcessing implements ProcessData{
     public HashMap<String, HashMap<String, String>> processData(String event) {
         HashMap<String, HashMap<String, String>> result = new HashMap<String, HashMap<String, String>>();
         HashMap<String, String> sensorValues = new HashMap<String, String>();
+        try{
         JSONTokener jtoken = new JSONTokener(event);
 
         JSONObject jsn = (JSONObject) jtoken.nextValue();
@@ -83,7 +85,9 @@ public class GenericNewSensorDataProcessing implements ProcessData{
 
 
         result.put(jsn.getString("id"), sensorValues);
-
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
         return result;
     }
 }

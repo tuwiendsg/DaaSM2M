@@ -7,12 +7,10 @@ package at.ac.tuwien.dsg.m2mdaas.processNewSensorData;
 import at.ac.tuwien.dsg.daas.entities.Column;
 import at.ac.tuwien.dsg.m2mdaas.callEventProcessing.EventProcessingM2MInterraction;
 import at.ac.tuwien.dsg.m2mdaas.utils.Configuration;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import oracle.jrockit.jfr.tools.ConCatRepository;
+
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
