@@ -59,9 +59,9 @@ public class GenericNewSensorDataProcessing implements ProcessData{
         
         for (String s : columnNames) {
             Column col = null;
-            Number nb=null;
+            Double nb=null;
             try {
-                nb=NumberFormat.getInstance().parse(""+jsn.get(s));
+                nb=(Double) NumberFormat.getInstance().parse(""+jsn.get(s));
             } catch (ParseException ex) {
                 Logger.getLogger(GenericNewSensorDataProcessing.class.getName()).log(Level.SEVERE, null, ex);
             }
