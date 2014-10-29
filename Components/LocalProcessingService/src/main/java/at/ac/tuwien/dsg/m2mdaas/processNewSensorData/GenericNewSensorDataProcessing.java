@@ -78,7 +78,18 @@ public class GenericNewSensorDataProcessing implements ProcessData {
             }
 
             for (String s : columnNames) {
-                sensorValues.put(s, jsn.getString(s));
+                //if string, put also ' in the field
+                Double nb = null;
+                try {
+                    nb = (Double) Double.parseDouble("" + jsn.get(s));
+                } catch (Exception ex) {
+                }
+                if (nb == null) {
+                    sensorValues.put(s, "'" + jsn.getString(s) + "'");
+                } else {
+                    sensorValues.put(s, jsn.getString(s));
+                }
+
             }
 
             result.put(jsn.getString("id"), sensorValues);

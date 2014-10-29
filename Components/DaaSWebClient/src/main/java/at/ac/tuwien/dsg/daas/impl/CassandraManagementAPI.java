@@ -95,14 +95,29 @@ public class CassandraManagementAPI implements DataManagementAPI {
         String createKeyspaceStatement = "CREATE KEYSPACE " + keyspace.getName() + " WITH replication "
                 + "= {'class':'SimpleStrategy', 'replication_factor':3};";
 
-        ResultSet resultSet = session.execute(createKeyspaceStatement);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(createKeyspaceStatement);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + createKeyspaceStatement);
+        }
+
+//        ExecutionInfo info = resultSet.getExecutionInfo();
     }
 
     public void dropKeyspace(Keyspace keyspace) {
         String createKeyspaceStatement = "DROP KEYSPACE " + keyspace.getName() + ";";
-        ResultSet resultSet = session.execute(createKeyspaceStatement);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(createKeyspaceStatement);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + createKeyspaceStatement);
+        }
 
     }
 
@@ -160,8 +175,13 @@ public class CassandraManagementAPI implements DataManagementAPI {
         createTableStatement += ");";
         log.debug(createTableStatement);
 
-        ResultSet resultSet = session.execute(createTableStatement);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        ResultSet resultSet = null;
+        try {
+            resultSet = session.execute(createTableStatement);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + createTableStatement);
+        }
     }
 
     /**
@@ -175,9 +195,14 @@ public class CassandraManagementAPI implements DataManagementAPI {
             // build create table statement
             String createIndexStatement = "CREATE INDEX " + column.getName() + "Index ON " + keyspaceName + "." + tableName + " ( " + column.getName() + ");";
 
-            ResultSet resultSet = session.execute(createIndexStatement);
-            ExecutionInfo info = resultSet.getExecutionInfo();
-            
+            ResultSet resultSet = null;
+            try {
+                resultSet = session.execute(createIndexStatement);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                log.error("Exception cause: " + createIndexStatement);
+            }
+
         }
     }
 
@@ -193,9 +218,19 @@ public class CassandraManagementAPI implements DataManagementAPI {
             String useKeyspaceStatement = "use " + keyspaceName + ";";
             String createIndexStatement = "DROP INDEX " + column.getName() + "Index ;";
 
-            session.execute(useKeyspaceStatement);
-            ResultSet resultSet = session.execute(createIndexStatement);
-            ExecutionInfo info = resultSet.getExecutionInfo();
+            try {
+                session.execute(useKeyspaceStatement);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                log.error("Exception cause: " + useKeyspaceStatement);
+            }
+
+            try {
+                session.execute(createIndexStatement);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                log.error("Exception cause: " + createIndexStatement);
+            }
         }
     }
 
@@ -204,8 +239,12 @@ public class CassandraManagementAPI implements DataManagementAPI {
         // build create table statement
         String dropTableStatement = "DROP TABLE " + table.getKeyspace().getName() + "." + table.getName() + ";";
 
-        ResultSet resultSet = session.execute(dropTableStatement);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        try {
+            session.execute(dropTableStatement);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + dropTableStatement);
+        }
     }
 
     /**
@@ -234,8 +273,14 @@ public class CassandraManagementAPI implements DataManagementAPI {
         selectCommand += " LIMIT 1"; // the LIMIT indicates how many ROWS to
         // retrieve in a querry
 
-        ResultSet resultSet = session.execute(selectCommand);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(selectCommand);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + selectCommand);
+        }
 
         return (resultSet.isExhausted()) ? null : resultSet.one();
     }
@@ -283,7 +328,13 @@ public class CassandraManagementAPI implements DataManagementAPI {
             // retrieve in a querry
         }
 
-        ResultSet resultSet = session.execute(selectCommand);
+        ResultSet resultSet = null;
+        try {
+            resultSet = session.execute(selectCommand);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + selectCommand);
+        }
         ExecutionInfo info = resultSet.getExecutionInfo();
 
         return (resultSet.isExhausted()) ? null : resultSet.all();
@@ -310,8 +361,12 @@ public class CassandraManagementAPI implements DataManagementAPI {
             columns = columns.substring(0, columns.length() - 1);
             values = values.substring(0, values.length() - 1);
             insertStatement += " ( " + columns + ") " + " VALUES (" + values + ")";
-            session.execute(insertStatement);
-
+            try {
+                session.execute(insertStatement);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                log.error("Exception cause: " + insertStatement);
+            }
         }
 
     }
@@ -338,15 +393,28 @@ public class CassandraManagementAPI implements DataManagementAPI {
             updateStatement += " WHERE " + condition + " ;";
         }
 
-        session.execute(updateStatement);
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(updateStatement);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + updateStatement);
+        }
 
     }
 
     public List<Row> listKeyspaces() {
 
         String selectCommand = "DESCRIBE keyspaces;";
-        ResultSet resultSet = session.execute(selectCommand);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(selectCommand);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + selectCommand);
+        }
 
         return (resultSet.isExhausted()) ? null : resultSet.all();
 
@@ -372,8 +440,14 @@ public class CassandraManagementAPI implements DataManagementAPI {
             selectCommand += " WHERE " + condition + ";";
         }
 
-        ResultSet resultSet = session.execute(selectCommand);
-        ExecutionInfo info = resultSet.getExecutionInfo();
+        ResultSet resultSet = null;
+
+        try {
+            resultSet = session.execute(selectCommand);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("Exception cause: " + selectCommand);
+        }
 
     }
 
