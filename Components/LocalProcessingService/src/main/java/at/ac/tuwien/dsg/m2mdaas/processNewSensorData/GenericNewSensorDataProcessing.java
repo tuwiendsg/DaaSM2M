@@ -17,15 +17,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
-
 /**
  *
  * @author Georgiana
  */
 public class GenericNewSensorDataProcessing implements ProcessData{
-    private static final Logger LOGGER = Logger.getLogger(GenericNewSensorDataProcessing.class);
+    private static final Logger LOGGER = Logger.getLogger(GenericNewSensorDataProcessing.class.getName());
 
     public GenericNewSensorDataProcessing() {
         for (String s : Configuration.getCurrentTables()) {
