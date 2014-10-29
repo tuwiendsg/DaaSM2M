@@ -29,8 +29,8 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
     private String url = "";
     private boolean transacted;
     private int ackMode = Session.AUTO_ACKNOWLEDGE;
-    private int BURST_SIZE=10;
-    private int BURST_SLEEP=200;
+    private int BURST_SIZE = 10;
+    private int BURST_SLEEP = 200;
     private Session session;
     private Destination destination;
     private MessageConsumer consumer = null;
@@ -44,14 +44,14 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
         this.url = url;
         this.subject = topic;
         t = new Thread(this);
-        if (!Configuration.getBurstSize().equalsIgnoreCase("")){
-        BURST_SIZE = Integer.parseInt(Configuration.getBurstSize());
+        if (!Configuration.getBurstSize().equalsIgnoreCase("")) {
+            BURST_SIZE = Integer.parseInt(Configuration.getBurstSize());
         }
-        if (!Configuration.getBurstSleep().equalsIgnoreCase("")){
-        BURST_SLEEP = Integer.parseInt(Configuration.getBurstSleep());
+        if (!Configuration.getBurstSleep().equalsIgnoreCase("")) {
+            BURST_SLEEP = Integer.parseInt(Configuration.getBurstSleep());
         }
         t.start();
-        
+
     }
 
     public void setUp() {
@@ -94,7 +94,7 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
 //                    }
 //                }
 //            }
-        LOGGER.info(String.format("Received event, policy "+Configuration.getCurrentPolicy()));
+        LOGGER.info(String.format("Received event, policy " + Configuration.getCurrentPolicy()));
 
         HashMap<String, HashMap<String, String>> data = processSensorLocationData.processData(event);
         if (Configuration.getCurrentPolicy().toLowerCase().contains("send_mixed") || Configuration.getCurrentPolicy().toLowerCase().contains("send_event")) {
@@ -103,7 +103,7 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
                 LOGGER.info(String.format("!!~~!! urgent event, sending"));
                 ProcessThread processThread = new ProcessThread(data);
                 processThread.start();
-            }else{ 
+            } else {
                 LOGGER.info(String.format("Adding event to store"));
                 if (Configuration.getCurrentPolicy().toLowerCase().contains("send_mixed")) {
                     storeData.add(data);
@@ -113,7 +113,7 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
             if (Configuration.getCurrentPolicy().toLowerCase().contains("send_all")) {
                 LOGGER.info(String.format("Adding event to store"));
                 storeData.add(data);
-                
+
             }
         }
 
@@ -137,41 +137,41 @@ public class MQConsumer implements MessageListener, ExceptionListener, Runnable 
         while (true) {
             if (storeData.size() > 0) {
                 LOGGER.info("Start sending bulk data with size " + storeData.size());
-                 int size = storeData.size();
-            List< HashMap<String, HashMap<String, String>>> newDMap = new ArrayList< HashMap<String, HashMap<String, String>>>();
-            newDMap.addAll(storeData);
-            int currentIndex=0;
-            LOGGER.info("~~~~~Sending from bulk...." + size);
+                int size = storeData.size();
+                List< HashMap<String, HashMap<String, String>>> newDMap = new ArrayList< HashMap<String, HashMap<String, String>>>();
+                newDMap.addAll(storeData);
+                int currentIndex = 0;
+                LOGGER.info("~~~~~Sending from bulk...." + size);
 
-            while (currentIndex<size){
-                try {
-                    int i=0;
-                    while (currentIndex<size && i<BURST_SIZE){
-                         EventProcessingM2MInterraction eventProcessingM2MInterraction = new EventProcessingM2MInterraction();
-                         eventProcessingM2MInterraction.putData(newDMap.get(currentIndex));
-                        i++;
-                        currentIndex++;
+                while (currentIndex < size) {
+                    try {
+                        int i = 0;
+                        while (currentIndex < size && i < BURST_SIZE) {
+                            EventProcessingM2MInterraction eventProcessingM2MInterraction = new EventProcessingM2MInterraction();
+                            eventProcessingM2MInterraction.putData(newDMap.get(currentIndex));
+                            i++;
+                            currentIndex++;
                         }
-                    Thread.sleep(BURST_SLEEP);
-                } catch (InterruptedException ex) {
-                     LOGGER.info( ex.getMessage());
+                        Thread.sleep(BURST_SLEEP);
+                    } catch (InterruptedException ex) {
+                        LOGGER.info(ex.getMessage());
+                    }
                 }
-            }
-            
-            for (int i = 0; i < size; i++) {
-                storeData.remove(0);
-            }
-            
+
+                for (int i = 0; i < size; i++) {
+                    storeData.remove(0);
+                }
+
             } else {
                 LOGGER.info("Data repo empty");
-               
+
             }
             try {
                 Random r = new Random();
                 r.nextInt(REFRESH_TIME);
                 Thread.sleep(REFRESH_TIME);
             } catch (InterruptedException ex) {
-                     LOGGER.info( ex.getMessage());
+                LOGGER.info(ex.getMessage());
             }
         }
     }
