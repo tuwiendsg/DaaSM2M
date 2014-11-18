@@ -68,8 +68,8 @@ public class AMQPConnector implements DataManagementAPI {
         }
     }
 
-    public List<Row> listKeyspaces() {
-        return new ArrayList<Row>();
+    public List<Keyspace> listKeyspaces() {
+        return new ArrayList<Keyspace>();
     }
 
     public void dropKeyspace(Keyspace keyspace) {
@@ -114,12 +114,12 @@ public class AMQPConnector implements DataManagementAPI {
         }
     }
 
-    public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+    public TableRow selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
         return null;
     }
 
-    public List<Row> selectXRowsFromTable(TableQuery querry) {
-        return new ArrayList<Row>();
+    public List<TableRow> selectXRowsFromTable(TableQuery querry) {
+        return new ArrayList<TableRow>();
     }
 
     public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {

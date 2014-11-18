@@ -17,14 +17,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
 
 /**
  *
  * @author Georgiana
  */
-public class GenericNewSensorDataProcessing implements ProcessData{
+public class GenericNewSensorDataProcessing implements ProcessData {
+
+    private static final Logger LOGGER = Logger.getLogger(GenericNewSensorDataProcessing.class.getName());
 
     public GenericNewSensorDataProcessing() {
         for (String s : Configuration.getCurrentTables()) {
@@ -37,53 +37,65 @@ public class GenericNewSensorDataProcessing implements ProcessData{
     public HashMap<String, HashMap<String, String>> processData(String event) {
         HashMap<String, HashMap<String, String>> result = new HashMap<String, HashMap<String, String>>();
         HashMap<String, String> sensorValues = new HashMap<String, String>();
-        JSONTokener jtoken = new JSONTokener(event);
+        try {
+            JSONTokener jtoken = new JSONTokener(event);
 
-        JSONObject jsn = (JSONObject) jtoken.nextValue();
+            JSONObject jsn = (JSONObject) jtoken.nextValue();
 
-        Iterator keys = jsn.keys();
-        List<String> columnNames = new ArrayList<String>();
-        while (keys.hasNext()) {
-            // loop to get the dynamic key
-           
-            String currentDynamicKey = (String) keys.next();
-            if (!currentDynamicKey.equalsIgnoreCase("id"))
-            columnNames.add(currentDynamicKey);
-        }
-        EventProcessingM2MInterraction eventProcessingM2MInterraction = new EventProcessingM2MInterraction();
-        List<Column> columns=new ArrayList<Column>();
-        if (!tableNames.contains("table_"+jsn.getString("id"))){
-        
-        
-        for (String s : columnNames) {
-            Column col = null;
-            Number nb=null;
-            try {
-                nb=NumberFormat.getInstance().parse(""+jsn.get(s));
-            } catch (ParseException ex) {
-                Logger.getLogger(GenericNewSensorDataProcessing.class.getName()).log(Level.SEVERE, null, ex);
+            Iterator keys = jsn.keys();
+            List<String> columnNames = new ArrayList<String>();
+            while (keys.hasNext()) {
+                // loop to get the dynamic key
+
+                String currentDynamicKey = (String) keys.next();
+                if (!currentDynamicKey.equalsIgnoreCase("id")) {
+                    columnNames.add(currentDynamicKey);
+                }
             }
-            if (nb==null){
-                col=new Column(s,"text");
-                
-            }else{
-                col=new Column(s,"double");
-               
+            EventProcessingM2MInterraction eventProcessingM2MInterraction = new EventProcessingM2MInterraction();
+            List<Column> columns = new ArrayList<Column>();
+            if (!tableNames.contains("table_" + jsn.getString("id"))) {
+
+                for (String s : columnNames) {
+                    Column col = null;
+                    Double nb = null;
+                    try {
+                        nb = (Double) Double.parseDouble("" + jsn.get(s));
+                    } catch (Exception ex) {
+                    }
+                    if (nb == null) {
+                        col = new Column(s, "text");
+
+                    } else {
+                        col = new Column(s, "double");
+
+                    }
+                    columns.add(col);
+                }
+                eventProcessingM2MInterraction.createTable(jsn.getString("id"), columns);
+                tableNames.add("table_" + jsn.getString("id"));
+
             }
-           columns.add(col);  
-        }
-           eventProcessingM2MInterraction.createTable(jsn.getString("id"), columns);
-           tableNames.add("table_"+jsn.getString("id"));
-           
-        }
-      
-        for (String s : columnNames){
-            sensorValues.put(s, jsn.getString(s));
-        }
 
+            for (String s : columnNames) {
+                //if string, put also ' in the field
+                Double nb = null;
+                try {
+                    nb = (Double) Double.parseDouble("" + jsn.get(s));
+                } catch (Exception ex) {
+                }
+                if (nb == null) {
+                    sensorValues.put(s, "'" + jsn.getString(s) + "'");
+                } else {
+                    sensorValues.put(s, jsn.getString(s));
+                }
 
-        result.put(jsn.getString("id"), sensorValues);
+            }
 
+            result.put(jsn.getString("id"), sensorValues);
+        } catch (Exception e) {
+            Logger.getLogger(GenericNewSensorDataProcessing.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+        }
         return result;
     }
 }

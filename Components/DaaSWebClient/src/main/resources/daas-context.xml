@@ -50,7 +50,11 @@
         
     </beans>
     
-    
+    <beans profile="SLEEPY">
+        <bean id="sleepyTimeInMilliseconds" class="at.ac.tuwien.dsg.daas.impl.SleepyAdapter" lazy-init="false">
+            <property name="sleepyTimeInMilliseconds" value="${SleepyTime:1000}"/>
+        </bean> 
+    </beans>
     <beans>
      
         <jaxrs:server id="dassRESTFULAPI" address="/">

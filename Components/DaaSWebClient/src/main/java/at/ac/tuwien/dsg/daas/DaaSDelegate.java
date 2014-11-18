@@ -123,8 +123,8 @@ public class DaaSDelegate {
         }
     }
 
-    public List<Row> listKeyspaces() {
-        List<Row> res = new LinkedList<Row>();
+    public List<Keyspace> listKeyspaces() {
+        List<Keyspace> res = new LinkedList<Keyspace>();
 
         Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
@@ -231,8 +231,8 @@ public class DaaSDelegate {
 
     }
 
-    public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
-        Row r = null;
+    public TableRow selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+        TableRow r = null;
         Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());
 
@@ -253,8 +253,8 @@ public class DaaSDelegate {
 
     }
 
-    public List<Row> selectXRowsFromTable(TableQuery querry) {
-        List<Row> res = new ArrayList<Row>();
+    public List<TableRow> selectXRowsFromTable(TableQuery querry) {
+        List<TableRow> res = new ArrayList<TableRow>();
 
         Integer reqID = this.newRequestID();
         monitor.addOutstandingRequest(reqID, new Date());

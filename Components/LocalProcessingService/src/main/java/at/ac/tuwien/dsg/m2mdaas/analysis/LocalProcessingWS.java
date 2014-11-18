@@ -37,15 +37,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Provider;
 
 
 
 @Singleton
+@Provider
 @Path("/")
 public class LocalProcessingWS implements Runnable{
         @Context
         private UriInfo context;
-        	private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(LocalProcessingWS.class);
+        private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(LocalProcessingWS.class);
 
 	private String host = "";
         private String port =  "";

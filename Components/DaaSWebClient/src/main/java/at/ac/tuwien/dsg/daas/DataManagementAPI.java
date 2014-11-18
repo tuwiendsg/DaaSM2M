@@ -28,7 +28,7 @@ public interface DataManagementAPI {
 
     public void createKeyspace(Keyspace keyspace);
 
-    public List<Row> listKeyspaces();
+    public List<Keyspace> listKeyspaces();
 
     public void dropKeyspace(Keyspace keyspace);
 
@@ -40,9 +40,9 @@ public interface DataManagementAPI {
 
     public void dropTable(Table table);
 
-    public Row selectOneRowFromTable(String keyspaceName, String tableName, String condition);
+    public TableRow selectOneRowFromTable(String keyspaceName, String tableName, String condition);
 
-    public List<Row> selectXRowsFromTable(TableQuery querry);
+    public List<TableRow> selectXRowsFromTable(TableQuery querry);
 
     public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows);
 

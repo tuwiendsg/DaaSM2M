@@ -18,7 +18,7 @@ PIDDIR=/tmp/
 PIDFILE=$PIDDIR/daas-pid.pid
 MELA_HTTP_PORT=8080
 LOG_DIR=/tmp/daas
-#Active profiles, can be can be CASSANDRA, MOM, or both
+#Active profiles, can be can be CASSANDRA, MOM, or both, or SLEEPY
 PROFILES=CASSANDRA,MOM
 
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed"  

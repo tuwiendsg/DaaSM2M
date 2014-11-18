@@ -98,10 +98,6 @@ public class M2M {
     @Consumes("application/xml")
     public Collection<Keyspace> listKeyspaces() {
         Collection<Keyspace> keyspaces = new ArrayList<Keyspace>();
-        List<Row> rows = api.listKeyspaces();
-        for (Row row : rows) {
-            Logger.getLogger(M2M.class.getName()).log(Level.ERROR, row.toString());
-        }
 
         return keyspaces;
 
@@ -226,62 +222,7 @@ public class M2M {
     @Produces("application/xml")
     public Collection<TableRow> retrieveXRows(TableQuery querry) {
 
-        List<Row> rows = api.selectXRowsFromTable(querry);
-        if (rows == null) {
-            return new ArrayList<TableRow>();
-        }
-        List<TableRow> retrievedRows = new ArrayList<TableRow>();
-        for (Row row : rows) {
-            TableRow tableRow = new TableRow();
-
-            for (ColumnDefinitions.Definition column : row.getColumnDefinitions()) {
-                String columnName = column.getName();
-                String value;
-                switch (column.getType().getName()) {
-                    case DOUBLE:
-                        value = "" + row.getDouble(columnName);
-                        break;
-                    case DECIMAL:
-                    case FLOAT:
-                        value = "" + row.getFloat(columnName);
-                        break;
-                    case COUNTER:
-                        value = "" + row.getLong(columnName);
-                        break;
-                    case INT:
-                        value = "" + row.getInt(columnName);
-                        break;
-                    case TEXT:
-                    case VARCHAR:
-                    case ASCII:
-                        value = row.getString(columnName);
-                        break;
-                    case BOOLEAN:
-                        value = "" + row.getBool(columnName);
-                        break;
-                    case INET:
-                        value = row.getInet(columnName).toString();
-                        break;
-                    case TIMEUUID:
-                    case UUID:
-                        value = row.getUUID(columnName).toString();
-                        break;
-                    case TIMESTAMP:
-                        value = row.getDate(columnName).toString();
-                        break;
-                    default:
-                        value = "type " + column.getType().getName();
-                        Logger.getLogger(this.getClass().getName()).log(Level.ERROR, "Currently not processing type " + column.getType().getName());
-                }
-
-                RowColumn rowColumn = new RowColumn(columnName, value);
-                tableRow.addRowColumn(rowColumn);
-
-            }
-            retrievedRows.add(tableRow);
-        }
-
-        return retrievedRows;
+        return api.selectXRowsFromTable(querry);
 
     }
 
@@ -304,71 +245,16 @@ public class M2M {
     @Consumes("application/json")
     @Produces("application/json")
     public Collection<TableRow> retrieveXRows(String querryJSON) {
-        List<TableRow> retrievedRows = new ArrayList<TableRow>();
         try {
             ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
             TableQuery tableQuery = mapper.readValue(querryJSON, TableQuery.class);
 
-            List<Row> rows = api.selectXRowsFromTable(tableQuery);
-            if (rows == null) {
-                return new ArrayList<TableRow>();
-            }
-
-            for (Row row : rows) {
-                TableRow tableRow = new TableRow();
-
-                for (ColumnDefinitions.Definition column : row.getColumnDefinitions()) {
-                    String columnName = column.getName();
-                    String value;
-                    switch (column.getType().getName()) {
-                        case DOUBLE:
-                            value = "" + row.getDouble(columnName);
-                            break;
-                        case DECIMAL:
-                        case FLOAT:
-                            value = "" + row.getFloat(columnName);
-                            break;
-                        case COUNTER:
-                            value = "" + row.getLong(columnName);
-                            break;
-                        case INT:
-                            value = "" + row.getInt(columnName);
-                            break;
-                        case TEXT:
-                        case VARCHAR:
-                        case ASCII:
-                            value = row.getString(columnName);
-                            break;
-                        case BOOLEAN:
-                            value = "" + row.getBool(columnName);
-                            break;
-                        case INET:
-                            value = row.getInet(columnName).toString();
-                            break;
-                        case TIMEUUID:
-                        case UUID:
-                            value = row.getUUID(columnName).toString();
-                            break;
-                        case TIMESTAMP:
-                            value = row.getDate(columnName).toString();
-                            break;
-                        default:
-                            value = "type " + column.getType().getName();
-                            Logger.getLogger(this.getClass().getName()).log(Level.ERROR, "Currently not processing type " + column.getType().getName());
-                    }
-
-                    RowColumn rowColumn = new RowColumn(columnName, value);
-                    tableRow.addRowColumn(rowColumn);
-
-                }
-                retrievedRows.add(tableRow);
-            }
-
+            List<TableRow> rows = api.selectXRowsFromTable(tableQuery);
+            return rows;
         } catch (IOException ex) {
             Logger.getLogger(M2M.class.getName()).log(Level.ERROR, null, ex);
+            return new ArrayList<TableRow>();
         }
-
-        return retrievedRows;
 
     }
 
