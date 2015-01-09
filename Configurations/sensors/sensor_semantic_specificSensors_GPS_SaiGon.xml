@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:salsa="https://github.com/tuwiendsg/SALSA" id="Sensors" name="SensorsTopology">
+    <ns2:ServiceTemplate id="QueueService">
+        <ns2:TopologyTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="software" reference="ElasticIoT/QueueUnit">                
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+            
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="MqttQueueVM" type="os" reference="ElasticIoT/MqttQueueVM">            
+            </ns2:NodeTemplate> 
+                       
+            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    
+    <!-- GPS Sensor Topology -->
+    <ns2:ServiceTemplate id="GPSSensors">     
+     		 <ns2:TopologyTemplate>
+            <!-- First VM of GPS sensor -->
+            <ns2:NodeTemplate minInstances="1" maxInstances="4" id="sensorGPSVM1" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+            </ns2:NodeTemplate>
+            
+             <!-- Second VM of GPS sensor -->
+            <ns2:NodeTemplate minInstances="1" maxInstances="4" id="sensorGPSVM2" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+            </ns2:NodeTemplate>
+            
+            <!-- GPS 1270 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1270" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1270" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gps_1270" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1270"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1270" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1270"/>
+                <ns2:TargetElement ref="sensorGPSVM1"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1270" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1270"/>
+            </ns2:RelationshipTemplate>
+    
+    				<!-- GPS 1271 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1271" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1271" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1271" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1271"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1271" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1271"/>
+                <ns2:TargetElement ref="sensorGPSVM1"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1271" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1271"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- GPS 1272 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1272" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1272" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1272" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1272"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1272" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1272"/>
+                <ns2:TargetElement ref="sensorGPSVM1"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1272" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1272"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- GPS 1273 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1273" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1273" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1273" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1273"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1273" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1273"/>
+                <ns2:TargetElement ref="sensorGPSVM1"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1273" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1273"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- GPS 1275 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1275" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1275" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1275" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1275"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1275" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1275"/>
+                <ns2:TargetElement ref="sensorGPSVM1"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1275" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1275"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            
+            <!-- VM 2 -->
+            
+            <!-- GPS 1276 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1276" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1276" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1276" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1276"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1276" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1276"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1276" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1276"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- GPS 1278 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1278" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1278" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1278" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1278"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1278" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1278"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1278" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1278"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- GPS 1279 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1279" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1279" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1279" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1279"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1279" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1279"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1279" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1279"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- GPS 1280 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1280" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1280" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1280" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1280"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1280" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1280"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1280" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1280"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- GPS 1281 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1281" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1281" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1281" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1281"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1281" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1281"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1281" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1281"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- GPS 1282 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1282" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1282" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1282" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1282"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1282" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1282"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1282" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1282"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            <!-- GPS 1285 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1285" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1285" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1285" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1285"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1285" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1285"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1285" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1285"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- GPS 1286 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1286" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1286" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1286" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1286"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1286" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1286"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1286" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1286"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- GPS 1287 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1287" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1287" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1287" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1287"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1285" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1287"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1287" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1287"/>
+            </ns2:RelationshipTemplate>
+            
+            
+             <!-- GPS 1288 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1288" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1288" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1288" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1288"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1288" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1288"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1288" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1288"/>
+            </ns2:RelationshipTemplate>
+            
+            
+             <!-- GPS 1289 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1289" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1289" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1289" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1289"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1289" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1289"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1289" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1289"/>
+            </ns2:RelationshipTemplate>
+            
+            
+             <!-- GPS 1290 -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="sensorGPS1290" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor_1290" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_1290" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gps_1290"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor1290" type="HOSTON">
+                <ns2:SourceElement ref="sensorGPS1290"/>
+                <ns2:TargetElement ref="sensorGPSVM2"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker1290" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor_1290"/>
+            </ns2:RelationshipTemplate>
+            
+            
+    
+                                   
+     </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+     
+    <!-- GPS -->
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1270" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1270.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1271" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1271.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1272" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1272.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1273" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1273.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1275" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1275.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1276" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1276.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1278" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1278.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1279" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1279.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1280" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1280.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1281" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1281.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1282" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1282.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1285" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1285.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1286" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1286.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1287" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1287.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1288" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1288.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1289" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1289.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gps_1290" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors_GPS/run_sensor_gps_1290.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    
+</ns2:Definitions>

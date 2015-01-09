@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:salsa="https://github.com/tuwiendsg/SALSA" id="ViennaChillerSensors" name="ViennaChillerSensors">
+    <ns2:ServiceTemplate id="QueueService">
+        <ns2:TopologyTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="software" reference="ElasticIoTPlatform/QueueUnit">                
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+            
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="MqttQueueVM" type="os" reference="ElasticIoTPlatform/MqttQueueVM">            
+            </ns2:NodeTemplate> 
+                       
+            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    
+		<!-- evaporator_fouling topology -->
+    <ns2:ServiceTemplate id="evaporator_fouling">     
+     		 <ns2:TopologyTemplate>
+            <!-- VM of evaporator_fouling sensors -->
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="sensor_evaporator_fouling_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+            </ns2:NodeTemplate>
+            
+            <!-- ch2a_exv_position  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="evaporator_fouling_ch2a_exv_position" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_evaporator_fouling_ch2a_exv_position"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_evaporator_fouling_ch2a_exv_position" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_ch2a_exv_position"/>
+                <ns2:TargetElement ref="sensor_evaporator_fouling_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_ch2a_exv_position" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- chw_supply_temp  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="evaporator_fouling_chw_supply_temp" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_evaporator_fouling_chw_supply_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_evaporator_fouling_chw_supply_temp"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_evaporator_fouling_chw_supply_temp" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_chw_supply_temp"/>
+                <ns2:TargetElement ref="sensor_evaporator_fouling_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_chw_supply_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_chw_supply_temp"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            <!-- fcu_ff1_set_point -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="evaporator_fouling_fcu_ff1_set_point" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_evaporator_fouling_fcu_ff1_set_point"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_evaporator_fouling_fcu_ff1_set_point" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_set_point"/>
+                <ns2:TargetElement ref="sensor_evaporator_fouling_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_set_point" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point"/>
+            </ns2:RelationshipTemplate>
+                        
+            
+            <!-- fcu_ff1_space_temp  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="evaporator_fouling_fcu_ff1_space_temp" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_evaporator_fouling_fcu_ff1_space_temp" artifactType="salsa:sh" artifactRef="deployArtifactSensor_evaporator_fouling_fcu_ff1_space_temp"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_evaporator_fouling_fcu_ff1_space_temp" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_space_temp"/>
+                <ns2:TargetElement ref="sensor_evaporator_fouling_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_space_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp"/>
+            </ns2:RelationshipTemplate>        				
+     </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+     
+    <!-- evaporator_fouling  -->
+    <ns2:ArtifactTemplate id="deployArtifactSensor_evaporator_fouling_ch2a_exv_position" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_evaporator_fouling_ch2a_exv_position.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_evaporator_fouling_chw_supply_temp" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_evaporator_fouling_chw_supply_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_evaporator_fouling_fcu_ff1_set_point" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_evaporator_fouling_fcu_ff1_set_point.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_evaporator_fouling_fcu_ff1_space_temp" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_evaporator_fouling_fcu_ff1_space_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    
+    
+    
+    
+    <!-- condenser_rule topology -->
+    <ns2:ServiceTemplate id="condenser_rule">     
+     		 <ns2:TopologyTemplate>
+            <!-- VM of evaporator_fouling sensors -->
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="sensor_condenser_rule_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+            </ns2:NodeTemplate>
+            
+            <!-- difference_oat_and_con_temp  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="condenser_rule_difference_oat_and_con_temp" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_condenser_rule_difference_oat_and_con_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_condenser_rule_difference_oat_and_con_temp"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_condenser_rule_difference_oat_and_con_temp" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_difference_oat_and_con_temp"/>
+                <ns2:TargetElement ref="sensor_condenser_rule_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_difference_oat_and_con_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_difference_oat_and_con_temp"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- motor_status  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="condenser_rule_motor_status" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_condenser_rule_motor_status" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_condenser_rule_motor_status"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_condenser_rule_motor_status" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_motor_status"/>
+                <ns2:TargetElement ref="sensor_condenser_rule_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_motor_status" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_motor_status"/>
+            </ns2:RelationshipTemplate>
+            
+             <!-- oat -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="condenser_rule_oat" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_condenser_rule_oat" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_condenser_rule_oat"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_condenser_rule_oat" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_oat"/>
+                <ns2:TargetElement ref="sensor_condenser_rule_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_oat" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_oat"/>
+            </ns2:RelationshipTemplate>    
+            
+    </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_condenser_rule_difference_oat_and_con_temp" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_condenser_rule_difference_oat_and_con_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_condenser_rule_motor_status" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_condenser_rule_motor_status.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_condenser_rule_oat" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_condenser_rule_oat.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    
+    
+     <!-- low_suction_pressure_ch3 -->
+    <ns2:ServiceTemplate id="low_suction_pressure_ch3">     
+     		 <ns2:TopologyTemplate>
+            <!-- VM of evaporator_fouling sensors -->
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="sensor_low_suction_pressure_ch3_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+            </ns2:NodeTemplate>
+            
+            <!-- ch3_cktA_compressor_suction_superheat_temp  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp" type="HOSTON">
+                <ns2:SourceElement ref="low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp"/>
+                <ns2:TargetElement ref="sensor_low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            <!-- ch3_cktA_exv_position  -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="low_suction_pressure_ch3_ch3_cktA_exv_position" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_exv_position" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_exv_position"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_low_suction_pressure_ch3_ch3_cktA_exv_position" type="HOSTON">
+                <ns2:SourceElement ref="low_suction_pressure_ch3_ch3_cktA_exv_position"/>
+                <ns2:TargetElement ref="sensor_low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_low_suction_pressure_ch3_ch3_cktA_exv_position" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_exv_position"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- ch3_cktA_percent_total_capacity -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="low_suction_pressure_ch3_ch3_cktA_percent_total_capacity" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity" type="HOSTON">
+                <ns2:SourceElement ref="low_suction_pressure_ch3_ch3_cktA_percent_total_capacity"/>
+                <ns2:TargetElement ref="sensor_low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            <!-- ch3_cktA_suction_pressure -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="low_suction_pressure_ch3_ch3_cktA_suction_pressure" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_suction_pressure" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_suction_pressure"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_low_suction_pressure_ch3_ch3_cktA_suction_pressure" type="HOSTON">
+                <ns2:SourceElement ref="low_suction_pressure_ch3_ch3_cktA_suction_pressure"/>
+                <ns2:TargetElement ref="sensor_low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_low_suction_pressure_ch3_ch3_cktA_suction_pressure" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_low_suction_pressure_ch3_ch3_cktA_suction_pressure"/>
+            </ns2:RelationshipTemplate>
+            
+            <!-- cmn_chws_temp -->
+            <ns2:NodeTemplate minInstances="0" maxInstances="1" id="low_suction_pressure_ch3_cmn_chws_temp" type="software">            	
+                <ns2:Requirements>
+                    <ns2:Requirement  id="brokerIp_Requirement_low_suction_pressure_ch3_cmn_chws_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="salsa:sh" artifactRef="deployArtifactSensor_low_suction_pressure_ch3_cmn_chws_temp"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="vmHostSensor_low_suction_pressure_ch3_cmn_chws_temp" type="HOSTON">
+                <ns2:SourceElement ref="low_suction_pressure_ch3_cmn_chws_temp"/>
+                <ns2:TargetElement ref="sensor_low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_low_suction_pressure_ch3_cmn_chws_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_low_suction_pressure_ch3_cmn_chws_temp"/>
+            </ns2:RelationshipTemplate>
+            
+            
+      </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    <ns2:ArtifactTemplate id="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_exv_position" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_low_suction_pressure_ch3_ch3_cktA_exv_position.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_low_suction_pressure_ch3_ch3_cktA_suction_pressure" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_low_suction_pressure_ch3_ch3_cktA_suction_pressure"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployArtifactSensor_low_suction_pressure_ch3_cmn_chws_temp" type="sh">
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensor_Chiller/runSensor_low_suction_pressure_ch3_cmn_chws_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    
+    
+</ns2:Definitions>
