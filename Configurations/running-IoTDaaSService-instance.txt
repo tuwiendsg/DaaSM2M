@@ -8,18 +8,18 @@ The IoT-DaaS-Service is deployed on DSG private cloud. Please refer to the appli
  - The artifact is stored in a HTTP server for directed download.
  
 The current configuration of the IoT-DaaS-Service instance:
- - SALSA instance: http://128.130.172.215:8080/salsa-engine (will be stated by [SALSA ENDPOINT])
- - SALSA RESTful: [SALSA ENDPOINT]/rest/
- - IoT-DaaS-Service management web interface: [SALSA ENDPOINT]/?id=DaaSService 
+ - SALSA instance: http://[IP:PORT]/salsa-engine
+ - SALSA RESTful: http://[IP:PORT]/salsa-engine/rest/
+ - IoT-DaaS-Service management web interface: http://[IP:PORT]/salsa-engine/?id=DaaSService 
  
 Using SALSA RESTful API
 The RESTful API for for service units as following: 
-<METHOD> [SALSA ENDPOINT]/rest/services/{serviceName}/topologies/{topologyName}/nodes/{nodeID}/[parameter]
+<METHOD> http://[IP:PORT]/salsa-engine/rest/services/{serviceName}/topologies/{topologyName}/nodes/{nodeID}/[parameter]
 Example:
  - Deploy 10 more sensors:
-   + POST [SALSA ENDPOINT]/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instance-count/10
+   + POST http://[IP:PORT]/salsa-engine/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instance-count/10
  - Remove sensor ID=5
-   + DELETE [SALSA ENDPOINT]/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instances/5
+   + DELETE http://[IP:PORT]/salsa-engine/rest/services/DaaSService/topologies/IoTDaasService/nodes/sensor/instances/5
    
 The following service unit ID can be use in this instance:
   DataControllerUnit
