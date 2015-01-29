@@ -36,7 +36,7 @@ def metric_init(params):
     d1 = {'name': 'pendingRequests',
         'call_back': temp_handler,
         'time_max': 5,
-        'value_type': 'int',
+        'value_type': 'double',
  'units': '#',
         'slope': 'both',
         'format': '%d',

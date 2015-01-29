@@ -68,7 +68,7 @@ public class SleepyAdapter implements DataManagementAPI {
     public void dropTable(Table table) {
     }
 
-    public TableRow selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
+    public synchronized TableRow selectOneRowFromTable(String keyspaceName, String tableName, String condition) {
         try {
             Thread.sleep(sleepyTimeInMilliseconds);
         } catch (InterruptedException ex) {
@@ -77,7 +77,7 @@ public class SleepyAdapter implements DataManagementAPI {
         return new TableRow();
     }
 
-    public List<TableRow> selectXRowsFromTable(TableQuery querry) {
+    public  synchronized List<TableRow> selectXRowsFromTable(TableQuery querry) {
         try {
             Thread.sleep(sleepyTimeInMilliseconds);
         } catch (InterruptedException ex) {
@@ -86,7 +86,7 @@ public class SleepyAdapter implements DataManagementAPI {
         return new ArrayList<TableRow>();
     }
 
-    public void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
+    public synchronized  void insertRowsInTable(String keyspaceName, String tableName, Collection<TableRow> rows) {
         try {
             Thread.sleep(sleepyTimeInMilliseconds);
         } catch (InterruptedException ex) {
@@ -94,7 +94,7 @@ public class SleepyAdapter implements DataManagementAPI {
         }
     }
 
-    public void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
+    public  synchronized void updateRowInTable(String keyspaceName, String tableName, Map<String, Object> newData, String condition) {
         try {
             Thread.sleep(sleepyTimeInMilliseconds);
         } catch (InterruptedException ex) {
@@ -102,7 +102,7 @@ public class SleepyAdapter implements DataManagementAPI {
         }
     }
 
-    public void deleteRowsFromTable(TableQuery query) {
+    public  synchronized void deleteRowsFromTable(TableQuery query) {
         try {
             Thread.sleep(sleepyTimeInMilliseconds);
         } catch (InterruptedException ex) {

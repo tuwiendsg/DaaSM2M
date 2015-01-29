@@ -2,26 +2,20 @@
 
 echo "Installing Load balancing \n" >> /tmp/salsa.artifact.log
 
-wget http://128.130.172.215/salsa/upload/files/DaasService/HAProxySetup-1.0.tar.gz
+wget -q http://128.130.172.215/repository/files/HelloElasticity/HAProxySetup-1.0.tar.gz
 tar -xzf ./HAProxySetup-1.0.tar.gz
 cd ./HAProxySetup-1.0
 CURRENT_DIR=$(pwd)
 
-#please uncomment if needed as appropriate for your distro. otherwise HAProxy 1.4 will be installed which does not work with our ganglia plug-in
+#please uncomment if needed as appropriate for your distro. otherwise HAProxy 1.4 will be installed which does not work with our ganglia plug
 
 #for Ubuntu devel, lucid, precise, saucy
-sudo -S add-apt-repository ppa:vbernat/haproxy-1.5 -y
 
-#for Ubuntu  raring, quantal, precise, oneiric 
-#sudo -S add-apt-repository ppa:nilya/haproxy-1.5
-
-sudo -S apt-get update
-sudo -S apt-get install ganglia-monitor  -y
-sudo -S apt-get install gmond  -y
-sudo -S apt-get install haproxy -y
-sudo -S apt-get install python -y
-#sudo -S apt-get install python-virtualenv -y 
-sudo -S apt-get install python-pip -y
+sudo -S apt-get install software-properties-common -y
+sudo -S apt-add-repository ppa:vbernat/haproxy-1.5 -y
+sudo -S apt-get update -y
+sudo -S apt-get install haproxy curl ganglia-monitor gmetad python python-virtualenv python-pip -y
+ 
 sudo -S pip install Flask
 
 #set HAProxy config path in 
@@ -36,7 +30,7 @@ eval "sed -i 's#HAPROXY_CONFIG_FILE=.*#HAPROXY_CONFIG_FILE=\"$CURRENT_DIR/haprox
 
 sudo -S killall haproxy
 
-%haproxy -f $CURRENT_DIR/haproxyConfig
+#haproxy -f $CURRENT_DIR/haproxyConfig
 python ./configPythonRESTfulAPI.py  &
 curl -X DELETE http://localhost:5001/service/1/1
 

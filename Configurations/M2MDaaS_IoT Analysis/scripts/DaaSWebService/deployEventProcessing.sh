@@ -5,10 +5,12 @@ echo "Installing Event Processing \n" >> /tmp/salsa.artifact.log
 
 . /etc/environment
  
-wget -q  http://128.130.172.215/salsa/upload/files/DaasService/DaaS-1.0.tar.gz
+wget -q  http://128.130.172.215/repository/files/HelloElasticity/DaaS-1.0.tar.gz
 tar -xzf ./DaaS-1.0.tar.gz
 
 cd ./DaaS-1.0
+
+sudo -S apt-get install curl -y
 
 CURRENT_DIR=$(pwd)
  
@@ -16,8 +18,8 @@ CASSANDRA_SEED_IP=$eventProcessingToDataController_IP
 AMQP_IP=$eventProcessingToMOM_IP
 LoadBalancerIP=$eventProcessingToLoadBalancer_IP
 
-#PROFILES="CASSANDRA,MOM"
-PROFILES=CASSANDRA,MOM
+#PROFILES="CASSANDRA,MOM,SLEEPY"
+PROFILES=SLEEPY
 AMQP_PORT=9124
 AMQP_QUEUE_NAME=DB_LOG
 
