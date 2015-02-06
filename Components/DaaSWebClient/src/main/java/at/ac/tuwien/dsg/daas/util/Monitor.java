@@ -9,6 +9,7 @@ package at.ac.tuwien.dsg.daas.util;
  *
  * @author daniel-tuwien
  */
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,23 +129,26 @@ public class Monitor {
     }
 
     private synchronized void recordMonitoring() {
+        Logger.getLogger(Monitor.class.getName()).log(Level.DEBUG, "Record monitoring at " + new Date().toString());
+      
         long avgTpt = troughput.get();
-
+        long avgRTForEndedRequests = responseTime.get();
         outstandingRequestsNumber.set(outstandingRequests.size());
 
         if (avgTpt > 0 || !outstandingRequests.isEmpty()) {
-            Long avgRTForEndedRequests = responseTime.get();
             //go trough all outstanding requests and add their time to avg RT
+            //querry only once to avoid issues with newly added tasks
+            Collection<Date> startingDates = outstandingRequests.values();
             Date now = new Date();
-            for (Date startedRequestTime : outstandingRequests.values()) {
+            for (Date startedRequestTime : startingDates) {
                 avgRTForEndedRequests += now.getTime() - startedRequestTime.getTime();
                 if (now.getTime() - startedRequestTime.getTime() < 0) {
                     Logger.getLogger(Monitor.class.getName()).log(Level.ERROR, "Response time " + (now.getTime() - startedRequestTime.getTime()) + " between now = " + now.toString() + " and starting " + startedRequestTime.toString());
                 }
             }
 
-            //divide by executed requests (troughput) and nr of ongoing requests
-            avgRTForEndedRequests /= (avgTpt + outstandingRequests.size());
+            //divide by executed requests (troughput)
+            avgRTForEndedRequests /= (avgTpt > 0 )? avgTpt: 1;
             averageResponseTime.set(avgRTForEndedRequests);
             averageTroughput.set(avgTpt);
         } else {
