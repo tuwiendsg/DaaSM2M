@@ -12,16 +12,6 @@ modules {
     name = "getPendingRequests"
     language = "python"
   } 
-
-   module {
-    name = "getDataOut
-    language = "python"
-  } 
-
-   module {
-    name = "getDataIn"
-    language = "python"
-  } 
   
 }
 
@@ -38,14 +28,6 @@ collection_group {
 
    metric {
     name = "pendingRequests"
-  }
-
-     metric {
-    name = "dataOut"
-  }
-
-     metric {
-    name = "dataIn"
   }
   
 }

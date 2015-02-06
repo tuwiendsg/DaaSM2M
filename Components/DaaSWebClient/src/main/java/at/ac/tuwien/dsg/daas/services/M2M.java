@@ -13,10 +13,9 @@ import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
 
-import com.datastax.driver.core.ColumnDefinitions;
-import com.datastax.driver.core.Row;
+ 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
+ 
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -52,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 @Provider
 @Path("/")
-@Api(value = "/", description = "The M2M is the entry point for all Cassandra access")
 public class M2M {
 
     @Context

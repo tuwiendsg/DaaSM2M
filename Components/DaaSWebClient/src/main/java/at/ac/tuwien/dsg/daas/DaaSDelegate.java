@@ -13,8 +13,6 @@ import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
 //import at.ac.tuwien.dsg.daas.util.ConfigurationFilesLoader;
 import at.ac.tuwien.dsg.daas.util.Monitor;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.exceptions.InvalidQueryException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -167,15 +165,13 @@ public class DaaSDelegate {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.createTable(table);
             }
-        } catch (InvalidQueryException e) {
+        } catch (Exception e) {
             String message = e.getMessage();
             if (message.startsWith("Keyspace") && message.endsWith("does not exist")) {
                 createKeyspace(new Keyspace(table.getKeyspace().getName()));
                 createTable(table);
             }
 
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         } finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
@@ -281,7 +277,7 @@ public class DaaSDelegate {
             for (DataManagementAPI dataManagementAPI : dataManagementAPIs) {
                 dataManagementAPI.insertRowsInTable(keyspaceName, tableName, rows);
             }
-        } catch (InvalidQueryException e) {
+        } catch (Exception e) {
             String message = e.getMessage();
             if (message.contains("unconfigured columnfamily")) {
                 log.error(e.getMessage());
@@ -297,7 +293,7 @@ public class DaaSDelegate {
                 if (!rows.isEmpty()) {
                     TableRow row = rows.iterator().next();
                     for (RowColumn column : row.getValues()) {
-                        if(column.getName().equals(table.getPrimaryKeyName())){
+                        if (column.getName().equals(table.getPrimaryKeyName())) {
                             continue;
                         }
                         String value = column.getValue();
@@ -353,9 +349,7 @@ public class DaaSDelegate {
             } else {
                 log.error(e.getMessage(), e);
             }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        } finally {
+        }  finally {
             monitor.removeOutstandingRequest(reqID, new Date());
         }
 

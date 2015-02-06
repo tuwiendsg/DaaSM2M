@@ -11,7 +11,6 @@ import at.ac.tuwien.dsg.daas.entities.Keyspace;
 import at.ac.tuwien.dsg.daas.entities.Table;
 import at.ac.tuwien.dsg.daas.entities.TableQuery;
 import at.ac.tuwien.dsg.daas.entities.TableRow;
-import com.datastax.driver.core.Row;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

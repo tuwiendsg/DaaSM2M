@@ -65,7 +65,7 @@ def metric_init(params):
     d1 = {'name': 'connectionRate',
         'call_back': temp_handler,
         'time_max': 5,
-        'value_type': 'double',
+        'value_type': 'int',
         'units': 'no',
         'slope': 'both',
         'format': '%d',
