@@ -7,7 +7,7 @@
         maxconn 10000
         ulimit-n 20031
         #log localhost local0
-        user ubuntu
+        #user ubuntu
         stats socket  /tmp/haproxy 
      
    defaults
@@ -25,6 +25,22 @@
         #option forwardfor
         default_backend servers
 
+    listen stats 0.0.0.0:80       #Listen on all IP's on port 9000
+        mode http
+        balance
+        timeout client 5000
+        timeout connect 4000
+        timeout server 30000
+
+    #This is the virtual URL to access the stats page
+    stats uri /haproxy_stats
+
+    #Authentication realm. This can be set to anything. Escape space characters with a backslash.
+    stats realm HAProxy\ Statistics
+
+    #The user/pass you want to use. Change this password!
+    stats auth comot:comot
+ 
     backend servers
         #option forwardfor
         #option httpclose

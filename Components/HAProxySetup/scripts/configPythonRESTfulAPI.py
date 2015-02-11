@@ -1,7 +1,7 @@
 from flask import request, Flask
 import subprocess
 
-HAPROXY_CONFIG_FILE= 
+HAPROXY_CONFIG_FILE="/opt/salsa/LoadBalancerUnit/HAProxySetup-1.0/haproxyConfig"
 
 app = Flask("HAProxyConfig_Endpoint")
 
@@ -19,12 +19,7 @@ def put_server(ip, port):
     for line in p.stdout.readlines():
       print line,
     retval = p.wait()
-    
-    #change access rights to socket such that ganglia plug-in can querry it 
-    p = subprocess.Popen("sudo chmod 0777 /tmp/haproxy", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    for line in p.stdout.readlines():
-      print line,
-    retval = p.wait()
+   
     return "Registered " + str(ip) +":" + str(port)
 
 @app.route('/service/<ip>/<port>', methods = ['DELETE'])
@@ -41,16 +36,10 @@ def delete_server(ip, port):
     for line in p.stdout.readlines():
       print line,
     retval = p.wait()
-
-    p = subprocess.Popen("sudo chmod 0777 /tmp/haproxy", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    for line in p.stdout.readlines():
-      print line,
-    retval = p.wait()
-
     return "Removed " + str(ip) +":" + str(port)
-
+ 
 if __name__ == '__main__':
-    app.run('0.0.0.0', 5001, debug=True)
+    app.run('0.0.0.0', 5001)
 
 
 
