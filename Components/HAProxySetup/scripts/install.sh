@@ -8,10 +8,12 @@ sudo -S add-apt-repository ppa:vbernat/haproxy-1.5 -y
 #sudo -S add-apt-repository ppa:nilya/haproxy-1.5
 
 sudo -S apt-get update
-sudo -S apt-get install ganglia-monitor gmond 
-sudo -S apt-get install haproxy
-sudo -S apt-get install python
-sudo -S apt-get install python-virtualenv
+sudo -S apt-get install ganglia-monitor gmond -y 
+sudo -S apt-get install haproxy -y
+sudo -S apt-get install haproxy -y
+sudo -S apt-get install python -y
+sudo -S apt-get install python-virtualenv -y
+sudo -S apt-get install screen
 sudo -S pip install Flask
 
 #set HAProxy config path in 
@@ -20,7 +22,7 @@ eval "sed -i 's#HAPROXY_CONFIG_FILE=.*#HAPROXY_CONFIG_FILE=$CURRENT_DIR/haproxyC
  
 haproxy -f $CURRENT_DIR/haproxyConfig
 
-python ./configPythonRESTfulAPI.py  &
+screen ./configPythonRESTfulAPI.py 
 
 cd ./gangliaPlugIns
 ./setupPlugIns.sh
