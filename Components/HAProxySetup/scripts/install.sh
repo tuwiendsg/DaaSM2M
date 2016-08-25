@@ -10,10 +10,9 @@ sudo -S add-apt-repository ppa:vbernat/haproxy-1.5 -y
 sudo -S apt-get update
 sudo -S apt-get install ganglia-monitor gmond -y 
 sudo -S apt-get install haproxy -y
-sudo -S apt-get install haproxy -y
 sudo -S apt-get install python -y
 sudo -S apt-get install python-virtualenv -y
-sudo -S apt-get install screen
+sudo -S apt-get install screen -y
 sudo -S pip install Flask
 
 #set HAProxy config path in 
